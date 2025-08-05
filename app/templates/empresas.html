@@ -1,0 +1,61 @@
+{% extends "plantilla.html" %}
+
+{% block title %}Lista de Empresas{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Lista de Empresas</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if current_user.rol == 'admin' %}
+        <a href="{{ url_for('empresa.crear') }}" class="btn btn-primary mb-3">Crear Nueva Empresa</a>
+        <a href="{{ url_for('auth.dashboard') }}" class="btn btn-primary mb-3">home</a>
+            
+        </div>
+    {% endif %}
+    
+
+    {% if empresas %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Razón Social</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Dirección</th>
+                    {% if current_user.rol == 'admin' %}
+                        <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for empresa in empresas %}
+                    <tr>
+                        <td>{{ empresa.razon_social }}</td>
+                        <td>{{ empresa.telefono }}</td>
+                        <td>{{ empresa.correo }}</td>
+                        <td>{{ empresa.direccion }}</td>
+                        {% if current_user.rol == 'admin' %}
+                            <td>
+                                <a href="{{ url_for('empresa.editar', id=empresa.idempresa) }}" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="{{ url_for('empresa.eliminar', id=empresa.idempresa) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta empresa?');">Eliminar</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay empresas registradas.</p>
+    {% endif %}
+</div>
+{% endblock %}

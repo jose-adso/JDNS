@@ -1,0 +1,76 @@
+{% extends "plantilla.html" %}
+
+{% block title %}Lista de Productos{% endblock %}
+
+{% block content %}
+    <h1>Lista de Productos</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if current_user.rol == 'admin' %}
+        <a href="{{ url_for('producto.crear') }}" class="btn btn-primary">Crear Nuevo Producto</a>
+    {% endif %}
+
+    {% if productos %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Tipo</th>
+                    <th>Precio Unitario</th>
+                    <th>Stock</th>
+                    <th>Empresa</th>
+                    <th>Imagen</th>
+                    {% if current_user.rol == 'admin' %}
+                        <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>{{ producto.tipo }}</td>
+                        <td>{{ producto.precio_unitario }}</td>
+                        <td>{{ producto.stock }}</td>
+                        <td>
+                            {% set empresa = producto.empresa_idempresa | int %}
+                            {% for emp in Empresa.query.all() %}
+                                {% if emp.idempresa == empresa %}
+                                    {{ emp.razon_social }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if producto.imagen %}
+                                <img src="{{ url_for('static', filename=producto.imagen) }}" alt="Imagen de {{ producto.nombre }}" style="max-width: 100px; max-height: 100px;" onerror="this.src='{{ url_for('static', filename='images/placeholder.jpg') }}';">
+                            {% else %}
+                                <span>No disponible</span>
+                            {% endif %}
+                        </td>
+                        {% if current_user.rol == 'admin' %}
+                            <td>
+                                <a href="{{ url_for('producto.editar', id=producto.idproducto) }}" class="btn btn-warning">Editar</a>
+                                <form action="{{ url_for('producto.eliminar', id=producto.idproducto) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay productos registrados.</p>
+    {% endif %}
+
+    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary">Regresar al Panel Principal</a>
+{% endblock %}
