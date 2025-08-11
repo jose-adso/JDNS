@@ -24,7 +24,7 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(empresa.bp)
     app.register_blueprint(productos.bp) 
-    app.register_blueprint(ventas_factura.bp)
+  
     
     
 
