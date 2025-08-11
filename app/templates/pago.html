@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Pagos</title>
+</head>
+<body>
+    <h1>Lista de Pagos</h1>
+    <a href="{{ url_for('pago.nuevo_pago') }}">Nuevo Pago</a>
+    <ul>
+    {% for pago in pagos %}
+        <li>
+            ID: {{ pago.idpago }} - Monto: {{ pago.monto }} - Fecha: {{ pago.fecha_pago }} - Estado: {{ pago.estado_pago }}
+            <a href="{{ url_for('pago.detalle_pago', id=pago.idpago) }}">Detalles</a>
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

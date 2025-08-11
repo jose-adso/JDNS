@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrito</title>
+    <style>
+        .cart-bubble {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: #f9f9f9;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .cart-item { margin-bottom: 10px; }
+        .cart-total { font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="cart-bubble">
+        <h3>Carrito de Compras</h3>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <ul>
+        {% for item in carritos %}
+            <li class="cart-item">
+                {{ Producto.query.get(item.producto_idproducto).nombre }} - Cantidad: {{ item.cantidad }} - Subtotal: {{ item.cantidad * Producto.query.get(item.producto_idproducto).precio_unitario }}
+                <form method="POST" action="{{ url_for('carrito.eliminar_del_carrito', carrito_id=item.idcarrito) }}" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+        <div class="cart-total">Total: {{ total }}</div>
+        <form method="POST" action="{{ url_for('carrito.agregar_al_carrito', producto_id=1) }}" style="display:inline;">
+            <button type="submit">Agregar Producto (Ejemplo ID 1)</button>
+        </form>
+        <form method="POST" action="{{ url_for('carrito.pagar') }}" style="display:inline;">
+            <button type="submit">Realizar Pago</button>
+        </form>
+        <a href="{{ url_for('cliente') }}">Cerrar</a>
+    </div>
+</body>
+</html>

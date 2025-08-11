@@ -14,11 +14,11 @@
     {% endwith %}
 
     {% if current_user.rol == 'admin' %}
-        <a href="{{ url_for('producto.crear') }}" class="btn btn-primary">Crear Nuevo Producto</a>
+        <a href="{{ url_for('producto.crear') }}" class="btn btn-primary mb-3">Crear Nuevo Producto</a>
     {% endif %}
 
     {% if productos %}
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nombre</th>
@@ -39,28 +39,27 @@
                         <td>{{ producto.nombre }}</td>
                         <td>{{ producto.descripcion }}</td>
                         <td>{{ producto.tipo }}</td>
-                        <td>{{ producto.precio_unitario }}</td>
+                        <td>${{ producto.precio_unitario }}</td>
                         <td>{{ producto.stock }}</td>
                         <td>
-                            {% set empresa = producto.empresa_idempresa | int %}
-                            {% for emp in Empresa.query.all() %}
-                                {% if emp.idempresa == empresa %}
+                            {% for emp in empresas %}
+                                {% if emp.idempresa == producto.empresa_idempresa %}
                                     {{ emp.razon_social }}
                                 {% endif %}
                             {% endfor %}
                         </td>
                         <td>
                             {% if producto.imagen %}
-                                <img src="{{ url_for('static', filename=producto.imagen) }}" alt="Imagen de {{ producto.nombre }}" style="max-width: 100px; max-height: 100px;" onerror="this.src='{{ url_for('static', filename='images/placeholder.jpg') }}';">
+                                <img src="{{ url_for('static', filename=producto.imagen) }}" alt="{{ producto.nombre }}" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
                             {% else %}
                                 <span>No disponible</span>
                             {% endif %}
                         </td>
                         {% if current_user.rol == 'admin' %}
                             <td>
-                                <a href="{{ url_for('producto.editar', id=producto.idproducto) }}" class="btn btn-warning">Editar</a>
+                                <a href="{{ url_for('producto.editar', id=producto.idproducto) }}" class="btn btn-warning btn-sm">Editar</a>
                                 <form action="{{ url_for('producto.eliminar', id=producto.idproducto) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
                                 </form>
                             </td>
                         {% endif %}
@@ -69,8 +68,8 @@
             </tbody>
         </table>
     {% else %}
-        <p>No hay productos registrados.</p>
+        <p class="text-center">No hay productos registrados.</p>
     {% endif %}
 
-    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary">Regresar al Panel Principal</a>
+    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary mt-3">Regresar al Panel Principal</a>
 {% endblock %}

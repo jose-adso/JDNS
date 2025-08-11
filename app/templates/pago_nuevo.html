@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nuevo Pago</title>
+</head>
+<body>
+    <h1>Nuevo Pago</h1>
+    <form method="POST">
+        <label>Fecha de Pago: <input type="datetime-local" name="fecha_pago" required></label><br>
+        <label>Monto: <input type="number" step="0.01" name="monto" required></label><br>
+        <label>Método de Pago: 
+            <select name="metodo_pago" required>
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="mixto">Mixto</option>
+            </select>
+        </label><br>
+        <label>Referencia de Pago: <input type="text" name="referencia_pago" required></label><br>
+        <label>Estado de Pago: 
+            <select name="estado_pago" required>
+                <option value="pendiente">Pendiente</option>
+                <option value="completado">Completado</option>
+                <option value="fallido">Fallido</option>
+            </select>
+        </label><br>
+        <label>Proveedor de Pago: <input type="text" name="proveedor_pago" required></label><br>
+        <label>Token de Transacción: <input type="text" name="token_transaccion" required></label><br>
+        <label>Factura Asociada: 
+            <select name="ventas_factura_idventas_factura" required>
+                {% for factura in facturas %}
+                    <option value="{{ factura.idventas_factura }}">{{ factura.idventas_factura }} - {{ factura.total }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="{{ url_for('pago.listar_pagos') }}">Cancelar</a>
+</body>
+</html>

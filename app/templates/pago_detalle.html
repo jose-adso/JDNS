@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalle de Pago</title>
+</head>
+<body>
+    <h1>Detalle de Pago</h1>
+    <p>ID: {{ pago.idpago }}</p>
+    <p>Fecha de Pago: {{ pago.fecha_pago }}</p>
+    <p>Monto: {{ pago.monto }}</p>
+    <p>Método de Pago: {{ pago.metodo_pago }}</p>
+    <p>Referencia de Pago: {{ pago.referencia_pago }}</p>
+    <p>Estado de Pago: {{ pago.estado_pago }}</p>
+    <p>Proveedor de Pago: {{ pago.proveedor_pago }}</p>
+    <p>Token de Transacción: {{ pago.token_transaccion }}</p>
+    <p>Factura Asociada: {{ pago.ventas_factura_idventas_factura }}</p>
+    <a href="{{ url_for('pago.listar_pagos') }}">Volver</a>
+</body>
+</html>

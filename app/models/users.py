@@ -47,3 +47,42 @@ class Producto(db.Model):
     stock = db.Column(db.Integer)
     imagen = db.Column(db.String(200))
     empresa_idempresa = db.Column(db.Integer, db.ForeignKey('empresa.idempresa'))
+    
+
+class Dispositivo(db.Model):
+    __tablename__ = 'dispositivo'
+    iddispositivo = db.Column(db.Integer, primary_key=True)
+    marca = db.Column(db.String(45))
+    color = db.Column(db.String(45))
+    imei = db.Column(db.String(45))
+    problema = db.Column(db.Text)  
+    usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    
+class VentaFactura(db.Model):
+    __tablename__ = 'ventas_factura'
+    idventas_factura = db.Column(db.Integer, primary_key=True)
+    usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'), nullable=False)
+    fecha_venta = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')
+    tipo_venta = db.Column(db.Enum('fisica', 'online', name='tipo_venta_enum'))
+    estado_envio = db.Column(db.Enum('pendiente', 'pagado', 'anulado', name='estado_envio_enum'), default='pendiente')
+    total = db.Column(db.VARCHAR(45), nullable=False)
+    
+class Pago(db.Model):
+    __tablename__ = 'pago'
+    idpago = db.Column(db.Integer, primary_key=True)
+    fecha_pago = db.Column(db.DateTime)
+    monto = db.Column(db.DECIMAL(10, 2))
+    metodo_pago = db.Column(db.Enum('efectivo', 'tarjeta', 'transferencia', 'mixto', name='metodo_pago_enum'))
+    referencia_pago = db.Column(db.String(100))
+    estado_pago = db.Column(db.Enum('pendiente', 'completado', 'fallido', name='estado_pago_enum'))
+    proveedor_pago = db.Column(db.String(45))
+    token_transaccion = db.Column(db.String(100))
+    ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'))
+    
+class Carrito(db.Model):
+    __tablename__ = 'carrito'
+    idcarrito = db.Column(db.Integer, primary_key=True)
+    usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'), nullable=False)
+    producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+    fecha_agregado = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')

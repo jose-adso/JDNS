@@ -18,7 +18,8 @@ def allowed_file(filename):
 @login_required
 def listar():
     productos = Producto.query.all()
-    return render_template('productos.html', productos=productos)
+    empresas = Empresa.query.all()  # Añadimos la consulta de empresas
+    return render_template('productos.html', productos=productos, empresas=empresas)
 
 @bp.route('/nuevo', methods=['GET', 'POST'])
 @login_required
@@ -67,17 +68,20 @@ def crear():
             tipo=tipo,
             precio_unitario=precio_unitario,
             stock=stock,
-            imagen='',  
+            imagen='',  # Inicializamos el campo imagen
             empresa_idempresa=empresa_idempresa
         )
         db.session.add(nuevo_producto)
-        db.session.flush()  
+        db.session.flush()  # Para obtener el idproducto antes de commit
         db.session.commit()
 
-     
+        # Manejo de la imagen
         if 'imagen' in request.files:
             file = request.files['imagen']
             if file and allowed_file(file.filename):
+                # Crear el directorio si no existe
+                if not os.path.exists(UPLOAD_FOLDER):
+                    os.makedirs(UPLOAD_FOLDER)
                 filename = secure_filename(f"{nuevo_producto.idproducto}.jpg")
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
                 nuevo_producto.imagen = f"images/productos/{filename}"  # Guardamos la ruta relativa
@@ -131,8 +135,8 @@ def editar(id):
 
         empresa = Empresa.query.get(empresa_idempresa)
         if not empresa:
-            flash('Empresa no encontrada.', 'danger')
-            return redirect(url_for('producto.editar', id=id))
+           flash('Empresa no encontrada.', 'danger')
+           return redirect(url_for('producto.editar', id=id))
 
         producto.nombre = nombre
         producto.descripcion = descripcion
@@ -146,6 +150,9 @@ def editar(id):
         if 'imagen' in request.files:
             file = request.files['imagen']
             if file and allowed_file(file.filename):
+                # Crear el directorio si no existe
+                if not os.path.exists(UPLOAD_FOLDER):
+                    os.makedirs(UPLOAD_FOLDER)
                 filename = secure_filename(f"{producto.idproducto}.jpg")
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
                 producto.imagen = f"images/productos/{filename}"  # Actualizamos la ruta
