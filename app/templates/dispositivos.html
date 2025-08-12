@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Dispositivos</title>
+</head>
+<body>
+    <h1>Lista de Dispositivos</h1>
+    <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}">Nuevo Dispositivo</a>
+    <ul>
+    {% for dispositivo in dispositivos %}
+        <li>
+            ID: {{ dispositivo.iddispositivo }} - Marca: {{ dispositivo.marca }} - IMEI: {{ dispositivo.imei }}
+            <a href="{{ url_for('dispositivo.detalle_dispositivo', id=dispositivo.iddispositivo) }}">Detalles</a>
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

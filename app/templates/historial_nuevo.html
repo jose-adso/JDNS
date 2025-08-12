@@ -1,0 +1,20 @@
+<h2>Nuevo Registro de Historial para Reparación ID {{ reparacion.idreparacion }}</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Estado Anterior</label>
+        <input type="text" name="estado_anterior" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Estado Nuevo</label>
+        <input type="text" name="estado_nuevo" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Observación</label>
+        <textarea name="observacion" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label>Fecha Cambio</label>
+        <input type="date" name="fecha_cambio" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar</button>
+</form>

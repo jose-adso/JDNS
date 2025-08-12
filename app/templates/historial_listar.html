@@ -1,0 +1,24 @@
+<h2>Historial de Reparación - ID {{ reparacion.idreparacion }}</h2>
+<a href="{{ url_for('historial.nuevo_historial', reparacion_id=reparacion.idreparacion) }}" class="btn btn-primary">Nuevo Registro</a>
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Estado Anterior</th>
+            <th>Estado Nuevo</th>
+            <th>Observación</th>
+            <th>Fecha Cambio</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for h in historial %}
+        <tr>
+            <td>{{ h.idhistorial_reparacion }}</td>
+            <td>{{ h.estado_anterior }}</td>
+            <td>{{ h.estado_nuevo }}</td>
+            <td>{{ h.observacion }}</td>
+            <td>{{ h.fecha_cambio.strftime("%Y-%m-%d") }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

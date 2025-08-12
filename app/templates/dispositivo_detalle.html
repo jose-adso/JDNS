@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalle de Dispositivo</title>
+</head>
+<body>
+    <h1>Detalle de Dispositivo</h1>
+    <p>ID: {{ dispositivo.iddispositivo }}</p>
+    <p>Marca: {{ dispositivo.marca }}</p>
+    <p>Color: {{ dispositivo.color }}</p>
+    <p>IMEI: {{ dispositivo.imei }}</p>
+    <p>Problema: {{ dispositivo.problema }}</p>
+    <p>Usuario ID: {{ dispositivo.usuario_idusuario }}</p>
+    <a href="{{ url_for('dispositivo.listar_dispositivos') }}">Volver</a>
+</body>
+</html>

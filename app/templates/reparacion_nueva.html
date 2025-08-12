@@ -1,0 +1,36 @@
+<h2>Nueva Reparación</h2>
+<form method="POST">
+  <label>Fecha Ingreso</label>
+  <input type="date" name="fecha_ingreso" required>
+
+  <label>Estado</label>
+  <input type="text" name="estado" required>
+
+  <label>Problema Reparación</label>
+  <textarea name="problema_reparacion" required></textarea>
+
+  <label>Costo</label>
+  <input type="number" name="costo" required>
+
+  <label>Fecha Entrega</label>
+  <input type="date" name="fecha_entrega" required>
+
+  <label>Teléfono</label>
+  <input type="number" name="telefono_jtelfono" required>
+
+  <label>Usuario</label>
+  <select name="usuario_idusuario">
+    {% for u in usuarios %}
+      <option value="{{ u.idusuario }}">{{ u.nombre }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Dispositivo</label>
+  <select name="dispositivo_iddispositivo">
+    {% for d in dispositivos %}
+      <option value="{{ d.iddispositivo }}">{{ d.marca }} - {{ d.imei }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit" class="btn btn-success">Guardar</button>
+</form>

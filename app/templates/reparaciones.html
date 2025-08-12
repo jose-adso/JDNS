@@ -1,0 +1,26 @@
+<h2>Lista de Reparaciones</h2>
+<a href="{{ url_for('reparacion.nueva_reparacion') }}" class="btn btn-primary">Nueva Reparación</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Fecha Ingreso</th>
+      <th>Estado</th>
+      <th>Problema</th>
+      <th>Dispositivo</th>
+      <th>Usuario</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reparaciones %}
+    <tr>
+      <td>{{ r.idreparacion }}</td>
+      <td>{{ r.fecha_ingreso.date() }}</td>
+      <td>{{ r.estado }}</td>
+      <td>{{ r.problema_reparacion }}</td>
+      <td>{{ r.dispositivo.marca }} - {{ r.dispositivo.imei }}</td>
+      <td>{{ r.usuario.nombre }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

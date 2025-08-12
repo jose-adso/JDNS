@@ -20,11 +20,17 @@ def create_app():
         from .models.users import Users
         return Users.query.get(int(idUser))
 
-    from app.routes import auth, empresa, productos, ventas_factura 
+    from app.routes import auth, empresa, productos, ventas_factura, carrito, dispositivos, pago, reparaciones, historial_reparacion
+    app.register_blueprint(historial_reparacion.bp)  
     app.register_blueprint(auth.bp)
     app.register_blueprint(empresa.bp)
     app.register_blueprint(productos.bp) 
-  
+    app.register_blueprint(ventas_factura.bp)
+    app.register_blueprint(carrito.carrito)         
+    app.register_blueprint(dispositivos.bp)         
+    app.register_blueprint(pago.pago)               
+    app.register_blueprint(reparaciones.bp)         
+
     
     
 

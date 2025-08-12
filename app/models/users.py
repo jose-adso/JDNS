@@ -58,6 +58,34 @@ class Dispositivo(db.Model):
     problema = db.Column(db.Text)  
     usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
     
+class Reparacion(db.Model):
+    __tablename__ = 'reparacion'
+    idreparacion = db.Column(db.Integer, primary_key=True)
+    fecha_ingreso = db.Column(db.DateTime)
+    estado = db.Column(db.String(200))
+    problema_reparacion = db.Column(db.Text(500))
+    costo = db.Column(db.Integer)
+    fecha_entrega = db.Column(db.DateTime)
+    telefono_idtelefono = db.Column(db.Integer)
+    usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    dispositivo_iddispositivo = db.Column(db.Integer, db.ForeignKey('dispositivo.iddispositivo'))  
+    
+    
+class HistorialReparacion(db.Model):
+    __tablename__ = 'historial_reparacion'
+    idhistorial_reparacion = db.Column(db.Integer, primary_key=True)
+    reparacion_idreparacion = db.Column(db.Integer, db.ForeignKey('reparacion.idreparacion'))
+    estado_anterior = db.Column(db.String(100))
+    estado_nuevo = db.Column(db.String(100))
+    observacion = db.Column(db.Text)
+    fecha_cambio = db.Column(db.DateTime)
+
+    reparacion = db.relationship('Reparacion', backref='historial')
+
+
+
+   
+    
 class VentaFactura(db.Model):
     __tablename__ = 'ventas_factura'
     idventas_factura = db.Column(db.Integer, primary_key=True)
