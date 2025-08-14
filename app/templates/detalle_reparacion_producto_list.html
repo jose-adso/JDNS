@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Detalles Reparación Producto{% endblock %}
+{% block content %}
+<h1>Detalles de Reparación de Producto</h1>
+<a href="{{ url_for('detalle_reparacion_producto.nuevo') }}">Añadir Detalle</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Reparación</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for d in detalles %}
+        <tr>
+            <td>{{ d.iddetalle_reparacion_producto }}</td>
+            <td>{{ d.producto.nombre }}</td>
+            <td>{{ d.cantidad }}</td>
+            <td>{{ d.reparacion_idreparacion }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

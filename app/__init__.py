@@ -20,7 +20,7 @@ def create_app():
         from .models.users import Users
         return Users.query.get(int(idUser))
 
-    from app.routes import auth, empresa, productos, ventas_factura, carrito, dispositivos, pago, reparaciones, historial_reparacion
+    from app.routes import auth, empresa, productos, ventas_factura, carrito, dispositivos, pago, reparaciones, historial_reparacion, notificaciones, mensaje_soporte, detalle_venta, detalle_reparacion_producto, adjunto_reparacion
     app.register_blueprint(historial_reparacion.bp)  
     app.register_blueprint(auth.bp)
     app.register_blueprint(empresa.bp)
@@ -29,7 +29,12 @@ def create_app():
     app.register_blueprint(carrito.carrito)         
     app.register_blueprint(dispositivos.bp)         
     app.register_blueprint(pago.pago)               
-    app.register_blueprint(reparaciones.bp)         
+    app.register_blueprint(reparaciones.bp)
+    app.register_blueprint(notificaciones.bp)   
+    app.register_blueprint(mensaje_soporte.bp) 
+    app.register_blueprint(detalle_venta.bp)  
+    app.register_blueprint(detalle_reparacion_producto.bp_detalle_rep) 
+    app.register_blueprint(adjunto_reparacion.bp_adj)  
 
     
     

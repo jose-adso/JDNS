@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mensajes de Soporte</title>
+</head>
+<body>
+    <h1>Mensajes de Soporte</h1>
+    <ul>
+    {% for mensaje in mensajes %}
+        <li>
+            ID: {{ mensaje.idmensaje_soporte }} - 
+            Emisor ID: {{ mensaje.emisor_id }} - 
+            Receptor ID: {{ mensaje.receptor_id }} - 
+            Asunto: {{ mensaje.asunto }} - 
+            Mensaje: {{ mensaje.mensaje }} - 
+            Leído: {{ 'Sí' if mensaje.leido else 'No' }} - 
+            Fecha: {{ mensaje.fecha_envio }}
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('nuevo_mensaje_soporte') }}">Crear Nuevo Mensaje de Soporte</a>
+    <!-- Agrega un enlace de vuelta al inicio si es necesario -->
+    <a href="{{ url_for('index') }}">Volver al Inicio</a>
+</body>
+</html>

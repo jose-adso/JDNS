@@ -119,7 +119,51 @@ class Notificacion(db.Model):
     __tablename__ = 'notificacion'
     idnotificacion = db.Column(db.Integer, primary_key=True)
     usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
-    tipo = db.Column(db.Enum)
+    tipo = db.Column(db.Enum('reparacion', 'pedido'))  
     mensaje = db.Column(db.Text(500))
-    leida = db.Column(db.Boolean)
+    leida = db.Column(db.Boolean, default=False) 
     fecha_envio = db.Column(db.DateTime)
+    
+class MensajeSoporte(db.Model):
+    __tablename__ = 'mensaje_soporte'
+    idmensaje_soporte = db.Column(db.Integer, primary_key=True)
+    emisor_id = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    receptor_id = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    asunto = db.Column(db.String(100))
+    mensaje = db.Column(db.Text)
+    leido = db.Column(db.Boolean, default=False)
+    fecha_envio = db.Column(db.DateTime)
+    
+
+class DetalleVenta(db.Model):
+    __tablename__ = 'detalle_venta'
+    iddetalles = db.Column(db.Integer, primary_key=True)
+    cantidad = db.Column(db.Integer, nullable=False)
+    precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
+    producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
+    ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'), nullable=False)
+    
+    
+
+class DetalleReparacionProducto(db.Model):
+    __tablename__ = 'detalle_reparacion_producto'
+    iddetalle_reparacion_producto = db.Column(db.Integer, primary_key=True)
+    cantidad = db.Column(db.Integer, nullable=False)
+    producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
+    reparacion_idreparacion = db.Column(db.Integer, db.ForeignKey('reparacion.idreparacion'), nullable=False)
+    
+
+
+class AdjuntoReparacion(db.Model):
+    __tablename__ = 'adjunto_reparacion'
+    idadjunto_reparacion = db.Column(db.Integer, primary_key=True)
+    reparacion_idreparacion = db.Column(db.Integer, db.ForeignKey('reparacion.idreparacion'), nullable=False)
+    ruta_archivo = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(db.Text)
+    fecha_subida = db.Column(db.DateTime)
+
+    
+
+
+   
+   

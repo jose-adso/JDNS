@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Adjunto de Reparación{% endblock %}
+{% block content %}
+<h1>Adjuntar archivo a Reparación</h1>
+<form method="POST" enctype="multipart/form-data">
+    <label>Reparación:</label>
+    <select name="reparacion_id" required>
+        {% for r in reparaciones %}
+            <option value="{{ r.idreparacion }}">Reparación #{{ r.idreparacion }}</option>
+        {% endfor %}
+    </select>
+    <label>Archivo:</label>
+    <input type="file" name="archivo" required>
+    <label>Descripción:</label>
+    <textarea name="descripcion"></textarea>
+    <button type="submit">Adjuntar</button>
+</form>
+{% endblock %}

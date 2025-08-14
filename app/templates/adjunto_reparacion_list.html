@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Adjuntos de Reparación{% endblock %}
+{% block content %}
+<h1>Adjuntos de Reparación</h1>
+<a href="{{ url_for('adjunto_reparacion.nuevo') }}">Añadir Adjunto</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Reparación</th>
+            <th>Archivo</th>
+            <th>Descripción</th>
+            <th>Fecha de subida</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for adj in adjuntos %}
+        <tr>
+            <td>{{ adj.idadjunto_reparacion }}</td>
+            <td>{{ adj.reparacion_idreparacion }}</td>
+            <td>
+                <a href="{{ url_for('static', filename=adj.ruta_archivo) }}" target="_blank">
+                    {{ adj.ruta_archivo.split('/')[-1] }}
+                </a>
+            </td>
+            <td>{{ adj.descripcion or '' }}</td>
+            <td>{{ adj.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

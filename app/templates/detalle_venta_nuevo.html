@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Detalle de Venta{% endblock %}
+{% block content %}
+<h1>Agregar Detalle de Venta</h1>
+<form method="POST">
+    <label>Producto:</label>
+    <select name="producto_id" required>
+        {% for p in productos %}
+            <option value="{{ p.idproducto }}">{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" min="1" required>
+    <label>Precio Unitario:</label>
+    <input type="number" name="precio_unitario" step="0.01" required>
+    <label>Factura:</label>
+    <select name="factura_id" required>
+        {% for f in facturas %}
+            <option value="{{ f.idventas_factura }}">Factura #{{ f.idventas_factura }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Guardar</button>
+</form>
+{% endblock %}

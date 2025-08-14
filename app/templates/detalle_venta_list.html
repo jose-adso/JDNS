@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Detalles de Venta{% endblock %}
+{% block content %}
+<h1>Detalles de Venta</h1>
+<a href="{{ url_for('detalle_venta.nuevo') }}">Añadir Detalle</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Factura</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for d in detalles %}
+        <tr>
+            <td>{{ d.iddetalles }}</td>
+            <td>{{ d.producto.nombre }}</td>
+            <td>{{ d.cantidad }}</td>
+            <td>${{ "%.2f"|format(d.precio_unitario) }}</td>
+            <td>{{ d.ventas_factura_idventas_factura }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

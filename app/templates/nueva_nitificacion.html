@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Notificación</title>
+</head>
+<body>
+    <h1>Crear Nueva Notificación</h1>
+    <form method="POST">
+        <label for="usuario_id">ID de Usuario:</label>
+        <input type="number" id="usuario_id" name="usuario_id" required><br><br>
+        
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo" required>
+            <option value="reparacion">Reparación</option>
+            <option value="pedido">Pedido</option>
+        </select><br><br>
+        
+        <label for="mensaje">Mensaje:</label><br>
+        <textarea id="mensaje" name="mensaje" rows="5" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Crear Notificación">
+    </form>
+    <a href="{{ url_for('notificaciones') }}">Volver a Notificaciones</a>
+</body>
+</html>

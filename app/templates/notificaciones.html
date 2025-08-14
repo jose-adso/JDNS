@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificaciones</title>
+</head>
+<body>
+    <h1>Notificaciones</h1>
+    <ul>
+    {% for notificacion in notificaciones %}
+        <li>
+            ID: {{ notificacion.idnotificacion }} - 
+            Usuario ID: {{ notificacion.usuario_idusuario }} - 
+            Tipo: {{ notificacion.tipo }} - 
+            Mensaje: {{ notificacion.mensaje }} - 
+            Leída: {{ 'Sí' if notificacion.leida else 'No' }} - 
+            Fecha: {{ notificacion.fecha_envio }}
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('nueva_notificacion') }}">Crear Nueva Notificación</a>
+    <!-- Agrega un enlace de vuelta al inicio si es necesario -->
+    <a href="{{ url_for('index') }}">Volver al Inicio</a>
+</body>
+</html>

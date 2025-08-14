@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Mensaje de Soporte</title>
+</head>
+<body>
+    <h1>Crear Nuevo Mensaje de Soporte</h1>
+    <form method="POST">
+        <label for="emisor_id">ID de Emisor:</label>
+        <input type="number" id="emisor_id" name="emisor_id" required><br><br>
+        
+        <label for="receptor_id">ID de Receptor:</label>
+        <input type="number" id="receptor_id" name="receptor_id" required><br><br>
+        
+        <label for="asunto">Asunto:</label>
+        <input type="text" id="asunto" name="asunto" required><br><br>
+        
+        <label for="mensaje">Mensaje:</label><br>
+        <textarea id="mensaje" name="mensaje" rows="5" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Crear Mensaje">
+    </form>
+    <a href="{{ url_for('mensajes_soporte') }}">Volver a Mensajes de Soporte</a>
+</body>
+</html>
