@@ -114,3 +114,12 @@ class Carrito(db.Model):
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     fecha_agregado = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')
+    
+class Notificacion(db.Model):
+    __tablename__ = 'notificacion'
+    idnotificacion = db.Column(db.Integer, primary_key=True)
+    usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    tipo = db.Column(db.Enum)
+    mensaje = db.Column(db.Text(500))
+    leida = db.Column(db.Boolean)
+    fecha_envio = db.Column(db.DateTime)
