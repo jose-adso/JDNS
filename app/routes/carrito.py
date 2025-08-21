@@ -36,7 +36,7 @@ def agregar_al_carrito(producto_id):
             flash('Producto agregado al carrito!', 'success')
         else:
             flash('No hay stock disponible.', 'error')
-    return redirect(url_for('auth.dashboard'))
+    return redirect(url_for('producto.listar_productos'))
 
 @carrito.route('/carrito/eliminar/<int:carrito_id>', methods=['POST'])
 def eliminar_del_carrito(carrito_id):

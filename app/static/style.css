@@ -1,0 +1,27 @@
+
+/* Estilo para las cards */
+.card {
+    display: flex;              /* Usa Flexbox */
+    flex-direction: column;     /* Apila los elementos en columna */
+    justify-content: center;    /* Centra verticalmente */
+    align-items: center;        /* Centra horizontalmente */
+    height: 100%;               /* Asegura que la card use todo el alto disponible */
+    border: 1px solid #ddd;     /* Borde ligero */
+    border-radius: 8px;         /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: transform 0.2s; /* Transición suave al hacer hover */
+}
+
+.card:hover {
+    transform: scale(1.02);     /* Efecto de aumento al pasar el ratón */
+}
+
+
+.card-img-top {
+    max-width: 200px;        /* Ancho máximo de la imagen */
+    max-height: 150px;       /* Altura máxima de la imagen */
+    width: auto;             /* Ajusta el ancho automáticamente */
+    height: auto;            /* Ajusta la altura automáticamente */
+    object-fit: cover;       /* Recorta la imagen para mantener proporciones */
+    margin-bottom: 10px;     /* Espaciado inferior para separar de texto */
+}
