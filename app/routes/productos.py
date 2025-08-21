@@ -1,32 +1,53 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from app import db
-from app.models.users import Producto, Empresa
+from app.models.users import Producto, Empresa, Users
 import os
 from werkzeug.utils import secure_filename
 
 bp = Blueprint('producto', __name__, url_prefix='/productos')
 
-# Configuración de la carpeta de imágenes
 UPLOAD_FOLDER = 'static/images/productos'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@bp.route('/')
+@bp.route('/', endpoint='listar_productos')
+@login_required
+def listar_productos():
+    productos = Producto.query.all()
+    empresas = Empresa.query.all()
+    if current_user.rol == 'admin':
+        return render_template('productos.html', productos=productos, empresas=empresas)
+    elif current_user.rol == 'cliente':
+        return render_template('plantilla.html', productos=productos, empresas=empresas)
+    elif current_user.rol == 'tecnico':
+        return render_template('productos.html', productos=productos, empresas=empresas, use_carousel=True)
+    else:
+        return "No tienes permiso para ver esta página", 403
+    
+@bp.route('/',endpoint='listar')
 @login_required
 def listar():
     productos = Producto.query.all()
     empresas = Empresa.query.all()  # Añadimos la consulta de empresas
     return render_template('productos.html', productos=productos, empresas=empresas)
+    
+
+@bp.route('/carrusel', endpoint='listar_carrusel')
+@login_required
+def listar_carrusel():
+    productos = Producto.query.all()
+    empresas = Empresa.query.all()
+    return render_template('plantilla.html', productos=productos, empresas=empresas, use_carousel=True)
 
 @bp.route('/nuevo', methods=['GET', 'POST'])
 @login_required
 def crear():
     if current_user.rol != 'admin':
         flash('No tienes permiso para crear productos.', 'danger')
-        return redirect(url_for('producto.listar'))
+        return redirect(url_for('producto.listar_productos'))
     
     empresas = Empresa.query.all()  
     if not empresas:
@@ -75,7 +96,7 @@ def crear():
         db.session.flush()  # Para obtener el idproducto antes de commit
         db.session.commit()
 
-        # Manejo de la imagen
+       
         if 'imagen' in request.files:
             file = request.files['imagen']
             if file and allowed_file(file.filename):
@@ -92,7 +113,7 @@ def crear():
         else:
             flash('Producto creado exitosamente, pero no se subió ninguna imagen.', 'info')
 
-        return redirect(url_for('producto.listar'))
+        return redirect(url_for('producto.listar_productos'))
     
     return render_template('producto_nuevo.html', empresas=empresas)
 
@@ -101,7 +122,7 @@ def crear():
 def editar(id):
     if current_user.rol != 'admin':
         flash('No tienes permiso para editar productos.', 'danger')
-        return redirect(url_for('producto.listar'))
+        return redirect(url_for('producto.listar_productos'))
     
     producto = Producto.query.get_or_404(id)
     empresas = Empresa.query.all()
@@ -163,7 +184,7 @@ def editar(id):
         else:
             flash('Producto actualizado exitosamente, pero no se subió ninguna nueva imagen.', 'info')
 
-        return redirect(url_for('producto.listar'))
+        return redirect(url_for('producto.listar_productos'))
     
     return render_template('producto_editar.html', producto=producto, empresas=empresas)
 
@@ -172,10 +193,10 @@ def editar(id):
 def eliminar(id):
     if current_user.rol != 'admin':
         flash('No tienes permiso para eliminar productos.', 'danger')
-        return redirect(url_for('producto.listar'))
+        return redirect(url_for('producto.listar_productos'))
     
     producto = Producto.query.get_or_404(id)
-    # Eliminar la imagen asociada si existe
+    
     if producto.imagen:
         image_path = os.path.join(UPLOAD_FOLDER, os.path.basename(producto.imagen))
         if os.path.exists(image_path):
@@ -183,4 +204,4 @@ def eliminar(id):
     db.session.delete(producto)
     db.session.commit()
     flash('Producto eliminado exitosamente.', 'success')
-    return redirect(url_for('producto.listar'))
+    return redirect(url_for('producto.listar_productos'))

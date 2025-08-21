@@ -2,10 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Mi Aplicación{% endblock %}</title>
+    <title>{% block title %}Mi Tienda{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
             padding-top: 80px;
@@ -14,104 +15,167 @@
         footer {
             background-color: #cce7ff;
         }
+        .card-img-top {
+            max-height: 200px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
-    <!-- NAVBAR -->
-    <nav class="navbar bg-body-tertiary fixed-top" style="background-color: #e3f2fd;">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">MiApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+            <a class="navbar-brand" href="#">Mi Tienda</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title">Menú</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('producto.listar') }}">Productos</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Opciones</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Perfil</a></li>
-                                <li><a class="dropdown-item" href="#">Ajustes</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form class="d-flex mt-3" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Buscar">
-                        <button class="btn btn-outline-primary" type="submit">Buscar</button>
-                    </form>
-                </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard"><span class="me-1">🏠</span>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('producto.listar_productos') }}"><span class="me-1">📦</span>Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('carrito.ver_carrito') }}"><span class="me-1">🛒</span>Carrito</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
+                    <button class="btn btn-outline-danger" type="button" onclick="location.href='{{ url_for('auth.logout') }}';">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
-
-    <!-- CARRUSEL -->
-    <div id="carouselExampleIndicators" class="carousel slide mb-5" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="{{ url_for('static', filename='img/banner1.jpg') }}" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/banner2.jpg') }}" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/banner3.jpg') }}" class="d-block w-100" alt="...">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="container mb-5">
-        {% block content %}
-        <div class="row">
-            {% if productos %}
-                {% for producto in productos %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="{{ producto.nombre }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ producto.nombre }}</h5>
-                                <p class="card-text">{{ producto.descripcion }}</p>
-                                <p class="card-text"><strong>Precio:</strong> ${{ producto.precio_unitario }}</p>
-                                <p class="card-text"><strong>Stock:</strong> {{ producto.stock }}</p>
-                                <a href="{{ url_for('producto.editar', id=producto.idproducto) if current_user.rol == 'admin' else '#' }}" class="btn btn-primary">Ver más</a>
+    
+    {% block content %}
+        {% if use_carousel %}
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for producto in productos %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="card" style="width: 18rem;">
+                                {% if producto.imagen %}
+                                    <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/productos/default.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                                    <p class="card-text">{{ producto.descripcion }}</p>
+                                    <p class="card-text">Precio: ${{ producto.precio_unitario }}</p>
+                                    <a href="{{ url_for('producto.editar', id=producto.idproducto) if current_user.rol == 'admin' else '#' }}" class="btn btn-primary">Ver más</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No hay productos registrados.</p>
-            {% endif %}
-        </div>
-        {% endblock %}
-    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
+        {% endif %}
 
-    <!-- FOOTER -->
+        {% if not use_carousel and not carrito_view %}
+            <div class="container mb-5">
+                <h2>Nuestros Productos</h2>
+                <div class="row">
+                    {% if productos %}
+                        {% for producto in productos %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    {% if producto.imagen %}
+                                        <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                                        <p class="fw-bold text-success fs-5"> ${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</p>
+                                        <p class="card-text">{{ producto.descripcion }}</p>
+                                        {% if producto.stock is defined and producto.stock > 0 %}
+                                            <p class="card-text">Stock: {{ producto.stock }}</p>
+                                        {% else %}
+                                            <p class="card-text text-danger">Agotado</p>
+                                        {% endif %}
+                                        {% if current_user.is_authenticated and producto.stock > 0 %}
+                                            <form action="{{ url_for('carrito.agregar_al_carrito', producto_id=producto.idproducto) }}" method="POST">
+                                                <button type="submit" class="btn btn-success">🛒 Agregar</button>
+                                            </form>
+                                        {% elif not current_user.is_authenticated %}
+                                            <p class="card-text">Inicia sesión</p>
+                                        {% else %}
+                                            <p class="card-text">Sin stock</p>
+                                        {% endif %}
+                                        {% if current_user.rol == 'admin' %}
+                                            <a href="{{ url_for('producto.editar', id=producto.idproducto) }}" class="btn btn-primary mt-2">Ver más</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center">No hay productos disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if carrito_view %}
+            <div class="container mb-5">
+                <h2>Carrito de Compras</h2>
+                {% if carritos %}
+                    <div class="row">
+                        {% for item in carritos %}
+                            {% if item.producto_idproducto in productos %}
+                                {% set producto = productos[item.producto_idproducto] %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        {% if producto.imagen %}
+                                            <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                                            <p class="card-text">Precio: ${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</p>
+                                            <p class="card-text">Cantidad: {{ item.cantidad }}</p>
+                                            <p class="card-text">Subtotal: ${{ (producto.precio_unitario|default(0)|float * item.cantidad)|round(0, 'floor')|string }}</p>
+                                            <form action="{{ url_for('carrito.eliminar_del_carrito', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm">❌ Eliminar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-danger">Producto ID {{ item.producto_idproducto }} no encontrado.</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4">
+                        <h4>Total: ${{ total|default(0)|float|round(0, 'floor')|string }}</h4>
+                        <a href="#" class="btn btn-primary">💳 Realizar Pago</a>
+                    </div>
+                {% else %}
+                    <p class="text-center">El carrito está vacío.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endblock %}
+
     <footer class="text-center py-4 mt-auto">
         <div class="container">
             <span class="text-muted">© 2025 Mi Empresa. Todos los derechos reservados.</span>
         </div>
     </footer>
 
-    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

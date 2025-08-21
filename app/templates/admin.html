@@ -3,67 +3,74 @@
 {% block title %}Panel del Administrador{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Panel del Administrador</h1>
+    <div class="container mt-4">
+        <h1>Panel del Administrador</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Usuarios</h5>
-                    <p class="card-text">{{ total_usuarios }}</p>
+       
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Usuarios</h5>
+                        <p class="card-text">{{ total_usuarios | default('N/A') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Bases de Datos</h5>
+                        <p class="card-text">{{ total_bd | default('N/A') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Accesos Últimos</h5>
+                        <p class="card-text">{{ accesos_ultimos | default('N/A') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Bases de Datos</h5>
-                    <p class="card-text">{{ total_bd }}</p>
-                </div>
-            </div>
+
+      
+        <h2 class="mt-5">Acceso a Paneles</h2>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-primary">Gestión de Empresas</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-primary">Gestión de Productos</a>
+            </li>
+        </ul>
+
+     
+        <h2 class="mt-5">Gestión de Empresas</h2>
+        <div class="mb-3">
+            <a href="{{ url_for('empresa.listar') }}" class="btn btn-info">Lista de Empresas</a>
+            <a href="{{ url_for('empresa.crear') }}" class="btn btn-success">Crear Nueva Empresa</a>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Accesos Últimos</h5>
-                    <p class="card-text">{{ accesos_ultimos }}</p>
-                </div>
-            </div>
+
+     
+        <h2 class="mt-5">Gestión de Productos</h2>
+        <div class="mb-3">
+            <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-info">Lista de Productos</a>
+            <a href="{{ url_for('producto.crear') }}" class="btn btn-success">Crear Nuevo Producto</a>
+        </div>
+
+
+        <div class="mt-5">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Cerrar sesión</a>
         </div>
     </div>
-
-    <h2>Acceso a Paneles</h2>
-   
-
-    <h2>Gestión de Empresas</h2>
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <a href="{{ url_for('empresa.listar') }}" class="btn btn-primary btn-block">Lista de Empresas</a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ url_for('empresa.crear') }}" class="btn btn-success btn-block">Crear Nueva Empresa</a>
-        </div>
-    </div>
-
-    <h2>Gestión de Productos</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <a href="{{ url_for('producto.listar') }}" class="btn btn-primary btn-block">Lista de Productos</a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ url_for('producto.crear') }}" class="btn btn-success btn-block">Crear Nuevo Producto</a>
-        </div>
-    </div>
-
-    <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary mt-3">Cerrar sesión</a>
-</div>
 {% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
 from app.models.users import Carrito, Producto, Pago, VentaFactura
 from flask_login import current_user
+from datetime import datetime
 
 carrito = Blueprint('carrito', __name__)
 
@@ -9,8 +10,9 @@ carrito = Blueprint('carrito', __name__)
 def ver_carrito():
     if current_user.is_authenticated:
         carritos = Carrito.query.filter_by(usuario_idusuario=current_user.idusuario).all()
-        total = sum(item.cantidad * Producto.query.get(item.producto_idproducto).precio_unitario for item in carritos)
-        return render_template('carrito.html', carritos=carritos, total=total)
+        productos = {item.producto_idproducto: Producto.query.get(item.producto_idproducto) for item in carritos}
+        total = sum(item.cantidad * productos[item.producto_idproducto].precio_unitario for item in carritos)
+        return render_template('plantilla.html', carritos=carritos, productos=productos, total=total, carrito_view=True)
     return redirect(url_for('auth.login'))
 
 @carrito.route('/carrito/agregar/<int:producto_id>', methods=['POST'])
@@ -22,14 +24,19 @@ def agregar_al_carrito(producto_id):
             if carrito_item:
                 carrito_item.cantidad += 1
             else:
-                nuevo_item = Carrito(usuario_idusuario=current_user.idusuario, producto_idproducto=producto_id, cantidad=1)
+                nuevo_item = Carrito(
+                    usuario_idusuario=current_user.idusuario,
+                    producto_idproducto=producto_id,
+                    cantidad=1,
+                    fecha_agregado=datetime.utcnow()  
+                )
                 db.session.add(nuevo_item)
             producto.stock -= 1
             db.session.commit()
             flash('Producto agregado al carrito!', 'success')
         else:
             flash('No hay stock disponible.', 'error')
-    return redirect(url_for('carrito.ver_carrito'))
+    return redirect(url_for('auth.dashboard'))
 
 @carrito.route('/carrito/eliminar/<int:carrito_id>', methods=['POST'])
 def eliminar_del_carrito(carrito_id):
@@ -41,6 +48,25 @@ def eliminar_del_carrito(carrito_id):
             db.session.delete(carrito_item)
             db.session.commit()
             flash('Producto eliminado del carrito!', 'success')
+    return redirect(url_for('carrito.ver_carrito'))
+
+@carrito.route('/carrito/reducir/<int:carrito_id>', methods=['POST'])
+def reducir_cantidad(carrito_id):
+    if current_user.is_authenticated:
+        carrito_item = Carrito.query.get_or_404(carrito_id)
+        if carrito_item.usuario_idusuario == current_user.idusuario:
+            if carrito_item.cantidad > 1:
+                carrito_item.cantidad -= 1
+                producto = Producto.query.get(carrito_item.producto_idproducto)
+                producto.stock += 1
+                db.session.commit()
+                flash('Cantidad reducida en el carrito!', 'success')
+            else:
+                producto = Producto.query.get(carrito_item.producto_idproducto)
+                producto.stock += 1
+                db.session.delete(carrito_item)
+                db.session.commit()
+                flash('Última unidad eliminada del carrito!', 'success')
     return redirect(url_for('carrito.ver_carrito'))
 
 @carrito.route('/carrito/pagar', methods=['POST'])
