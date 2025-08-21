@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 bp = Blueprint('producto', __name__, url_prefix='/productos')
 
-UPLOAD_FOLDER = 'static/images/productos'
+UPLOAD_FOLDER = 'app/static/images/productos'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
