@@ -26,33 +26,38 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Mi Tienda</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.dashboard') }}"><span class="me-1">🏠</span>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('producto.listar_productos') }}"><span class="me-1">📦</span>Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('carrito.ver_carrito') }}"><span class="me-1">🛒</span>Carrito</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
-                    <button class="btn btn-outline-danger" type="button" onclick="location.href='{{ url_for('auth.logout') }}';">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                    </button>
-                </form>
-            </div>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand text-primary-custom" href="{{ url_for('auth.dashboard') }}">
+            <i class="bi bi-phone me-2"></i>JDNS COMUNICACIONES
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.dashboard') }}"><span class="me-1">🏠</span>Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('producto.listar_productos') }}"><span class="me-1">📦</span>Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('carrito.ver_carrito') }}"><span class="me-1">🛒</span>Carrito</a>
+                </li>
+            </ul>
+            
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </a>
+            </form>
         </div>
-    </nav>
+    </div>
+</nav>
     
     {% block content %}
         {% if use_carousel %}
@@ -152,6 +157,9 @@
                                             <p class="card-text">Precio: ${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</p>
                                             <p class="card-text">Cantidad: {{ item.cantidad }}</p>
                                             <p class="card-text">Subtotal: ${{ (producto.precio_unitario|default(0)|float * item.cantidad)|round(0, 'floor')|string }}</p>
+                                            <form action="{{ url_for('carrito.reducir_cantidad', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-warning btn-sm">⬇ Disminuir</button>
+                                    </form>
                                             <form action="{{ url_for('carrito.eliminar_del_carrito', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
                                                 <button type="submit" class="btn btn-danger btn-sm">❌ Eliminar</button>
                                             </form>
