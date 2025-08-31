@@ -18,9 +18,10 @@
                             Soluciones tecnológicas confiables para particulares y empresas.
                         </p>
                         <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                            <a href="#productos" class="btn btn-primary btn-lg px-4">
-                                <i class="bi bi-phone me-2"></i>Ver Productos
-                            </a>
+                            <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-primary btn-lg px-4">
+    <i class="bi bi-phone me-2"></i>Ver Productos
+</a>
+
                             <a href="#servicios" class="btn btn-secondary btn-lg px-4">
                                 <i class="bi bi-tools me-2"></i>Nuestros Servicios
                             </a>
@@ -56,106 +57,10 @@
     </section>
 
 
-    <section id="productos" class="parallax-section products-section py-5">
-        <div class="parallax-content">
-            <div class="container">
-                <div class="row justify-content-center mb-5">
-                    <div class="col-lg-8 text-center text-white">
-                        <h2 class="display-5 fw-bold mb-4">Productos Destacados</h2>
-                        <p class="lead">Equipos de última generación de las mejores marcas del mercado</p>
-                    </div>
-                </div>
-                
-                <div class="row g-4">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/iphone-15-pro.png') }}" class="card-img-top" alt="iPhone 15 Pro" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">iPhone 15 Pro</h5>
-                                <p class="card-text">El smartphone más avanzado de Apple con chip A17 Pro y cámara profesional.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$1,199</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/samsung-galaxy-s24-smartphone.png') }}" class="card-img-top" alt="Samsung Galaxy S24" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">Samsung Galaxy S24</h5>
-                                <p class="card-text">Potencia y elegancia con IA integrada y cámara de 200MP.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$899</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/macbook-air-laptop-silver.png') }}" class="card-img-top" alt="MacBook Air" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">MacBook Air M3</h5>
-                                <p class="card-text">Laptop ultradelgada con chip M3 y hasta 18 horas de batería.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$1,299</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/dell-xps-13-laptop.png') }}" class="card-img-top" alt="Dell XPS 13" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">Dell XPS 13</h5>
-                                <p class="card-text">Laptop premium con pantalla InfinityEdge y procesador Intel Core i7.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$1,099</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/ipad-pro.png') }}" class="card-img-top" alt="iPad Pro" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">iPad Pro</h5>
-                                <p class="card-text">Tablet profesional con chip M2 y pantalla Liquid Retina XDR.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$799</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card card-glass h-100 product-card">
-                            <img src="{{ url_for('static', filename='public/samsung-galaxy-tab-s9.png') }}" class="card-img-top" alt="Samsung Galaxy Tab" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary-custom">Galaxy Tab S9</h5>
-                                <p class="card-text">Tablet Android premium con S Pen incluido y pantalla AMOLED.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="h5 text-secondary-custom mb-0">$649</span>
-                                    <a href="#" class="btn btn-primary">Ver Detalles</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
-    <!-- Services Section -->
+
+    <div class="servicios">
     <section id="servicios" class="parallax-section services-section py-5">
         <div class="parallax-content">
             <div class="container">
@@ -233,7 +138,7 @@
                         <img src="{{ url_for('static', filename='public/dell-logo.png') }}" alt="Dell" class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/hp-logo.png') }}" alt="HP" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/hp-logo-abstract.png') }}" alt="HP" class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
                         <img src="{{ url_for('static', filename='public/lenovo-logo.png') }}" alt="Lenovo" class="img-fluid brand-logo" style="max-height: 80px;">
@@ -245,6 +150,7 @@
             </div>
         </div>
     </section>
+    </div>
 
     <!-- Location Section -->
     <section class="py-5 bg-light">
@@ -298,62 +204,7 @@
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contacto" class="py-5 bg-primary text-white">
-        <div class="container">
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8 text-center">
-                    <h2 class="display-5 fw-bold mb-4">Contáctanos</h2>
-                    <p class="lead">¿Tienes alguna pregunta? Estamos aquí para ayudarte</p>
-                </div>
-            </div>
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <form class="card card-glass" onsubmit="enviarFormulario(event)">
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="col-12">
-                                    <label for="telefono" class="form-label">Teléfono</label>
-                                    <input type="tel" class="form-control" id="telefono" name="telefono">
-                                </div>
-                                <div class="col-12">
-                                    <label for="servicio" class="form-label">Servicio de Interés</label>
-                                    <select class="form-select" id="servicio" name="servicio">
-                                        <option value="">Selecciona un servicio</option>
-                                        <option value="reparacion-movil">Reparación de Móviles</option>
-                                        <option value="reparacion-laptop">Reparación de Laptops</option>
-                                        <option value="venta-equipos">Venta de Equipos</option>
-                                        <option value="accesorios">Accesorios</option>
-                                        <option value="otro">Otro</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label for="mensaje" class="form-label">Mensaje</label>
-                                    <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                                        <i class="bi bi-send me-2"></i>Enviar Mensaje
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+   
 
     <!-- Footer -->
     <footer class="bg-dark text-white py-5">
@@ -365,9 +216,9 @@
                     </h5>
                     <p>Líderes en venta y reparación de equipos móviles y de cómputo. Más de 15 años de experiencia brindando soluciones tecnológicas confiables.</p>
                     <div class="d-flex gap-3">
-                        <a href="https://facebook.com/jdnscomunicaciones" target="_blank" class="text-white"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="https://www.facebook.com/people/Jdns-Comunicaciones/pfbid0UDbfnLBdbhFTjtHxngKrAdyYT5EysxDzHHa17XwnGaRDAnMpyc6TkaQt7XHozpT2l/?rdid=wUU8GAQJAVeb5Oow&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F171t8dbovM%2F" target="_blank" class="text-white"><i class="bi bi-facebook fs-4"></i></a>
                         <a href="https://instagram.com/jdnscomunicaciones" target="_blank" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
-                        <a href="https://twitter.com/jdnscomunicaciones" target="_blank" class="text-white"><i class="bi bi-whatsapp fs-4"></i></a>
+                       <a href="https://wa.me/3144790706" target="_blank" class="text-white"><i class="bi bi-whatsapp fs-4"></i></a>
                     </div>
                 </div>
                 

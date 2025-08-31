@@ -28,7 +28,7 @@
 
 /* Variables CSS para colores corporativos */
 :root {
-  --primary-color: #1c3d46;
+  --primary-color: #0891b2;
   --secondary-color: #f97316;
   --accent-color: #06b6d4;
   --dark-bg: #1e293b;
@@ -99,7 +99,7 @@ body {
 
 /* Secciones con fondo parallax */
 .hero-section {
-  background: linear-gradient(rgba(150, 211, 226, 0.8), rgba(10, 64, 73, 0.8)),
+  background: linear-gradient(rgba(8, 145, 178, 0.8), rgba(6, 182, 212, 0.8)),
     url("../public/modern-technology-workspace-with-smartphones-lapto.png");
   background-size: cover;
   background-position: center;
@@ -381,7 +381,7 @@ body {
   animation: fadeInUp 0.8s ease-out;
 }
 
-
+/* Responsive */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
@@ -430,7 +430,7 @@ body {
   }
 }
 
-
+/* Utilidades */
 .text-gradient {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
@@ -451,55 +451,3 @@ body {
 .rounded-custom {
   border-radius: 20px;
 }
-
-.login-background {
-    background-image: url('{{ url_for("static", filename="public/modern-electronics-store-with-organized-product-ca.png") }}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    position: relative;
-}
-
-.card {
-    border-radius: 10px;
-    backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado (opcional, requiere soporte) */
-}
-
-.card-header {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.card-body {
-    padding: 2rem;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.alert {
-    margin-bottom: 1rem;
-}
-
-/* Ajuste para que el texto sea legible sobre el fondo */
-.card {
-    color: #000;
-}
-
-.servicios {
-  background: linear-gradient(to bottom, #90C3D4 0%, #649BA7 100%);
-}
-

@@ -77,13 +77,12 @@ def realizar_pago():
             total = sum(item.cantidad * Producto.query.get(item.producto_idproducto).precio_unitario for item in carritos)
             nueva_factura = VentaFactura(usuario_idusuario=current_user.idusuario, total=str(total))
             db.session.add(nueva_factura)
-            db.session.flush()  # Obtener el ID de la factura antes de commit
-
+            db.session.flush() 
             for item in carritos:
                 nuevo_pago = Pago(
                     fecha_pago='CURRENT_TIMESTAMP',
                     monto=Producto.query.get(item.producto_idproducto).precio_unitario * item.cantidad,
-                    metodo_pago='efectivo',  # Puedes ajustar esto con un formulario
+                    metodo_pago='efectivo', 
                     estado_pago='pendiente',
                     proveedor_pago='Proveedor Genérico',
                     token_transaccion='TOKEN_' + str(nueva_factura.idventas_factura),

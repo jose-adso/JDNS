@@ -173,7 +173,8 @@
                     </div>
                     <div class="text-center mt-4">
                         <h4>Total: ${{ total|default(0)|float|round(0, 'floor')|string }}</h4>
-                        <a href="#" class="btn btn-primary">💳 Realizar Pago</a>
+                        <a href="{{ url_for('pago.nuevo_pago') }}" class="btn btn-primary">💳 Realizar Pago</a>
+
                     </div>
                 {% else %}
                     <p class="text-center">El carrito está vacío.</p>

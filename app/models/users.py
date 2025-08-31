@@ -95,10 +95,13 @@ class VentaFactura(db.Model):
     estado_envio = db.Column(db.Enum('pendiente', 'pagado', 'anulado', name='estado_envio_enum'), default='pendiente')
     total = db.Column(db.VARCHAR(45), nullable=False)
     
+from datetime import datetime
+from app import db
+
 class Pago(db.Model):
     __tablename__ = 'pago'
     idpago = db.Column(db.Integer, primary_key=True)
-    fecha_pago = db.Column(db.DateTime)
+    fecha_pago = db.Column(db.DateTime, default=datetime.utcnow)
     monto = db.Column(db.DECIMAL(10, 2))
     metodo_pago = db.Column(db.Enum('efectivo', 'tarjeta', 'transferencia', 'mixto', name='metodo_pago_enum'))
     referencia_pago = db.Column(db.String(100))
@@ -106,14 +109,16 @@ class Pago(db.Model):
     proveedor_pago = db.Column(db.String(45))
     token_transaccion = db.Column(db.String(100))
     ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'))
-    
+
+
 class Carrito(db.Model):
     __tablename__ = 'carrito'
     idcarrito = db.Column(db.Integer, primary_key=True)
     usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'), nullable=False)
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
-    fecha_agregado = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')
+    fecha_agregado = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
     
 class Notificacion(db.Model):
     __tablename__ = 'notificacion'
