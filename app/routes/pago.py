@@ -1,19 +1,30 @@
-from flask import Blueprint, render_template, request, flash, send_file
+from flask import Blueprint, render_template, request, flash, send_file, make_response
 from app import db
 from app.models.users import Pago, VentaFactura, Carrito, Producto, Users, DetalleVenta
 from flask_login import current_user
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 import io
 
 pago = Blueprint('pago', __name__)
 
-# ---- RUTA PARA NUEVO PAGO ----
+@pago.route('/pago')
+def listar_pagos():
+    pagos = Pago.query.all()
+    return render_template('pago.html', pagos=pagos)
+
 @pago.route('/pago/nuevo', methods=['GET', 'POST'])
 def nuevo_pago():
     if request.method == 'POST':
         try:
+            # Obtener datos del formulario
+            numero_tarjeta = request.form['numero_tarjeta']
+            fecha_expiracion = request.form['fecha_expiracion']
+            cvv = request.form['cvv']
+            nombre_titular = request.form['nombre_titular']
+
             # Carrito del usuario
             carrito_items = Carrito.query.filter_by(usuario_idusuario=current_user.idusuario).all()
             if not carrito_items:
@@ -37,40 +48,45 @@ def nuevo_pago():
                 usuario_idusuario=current_user.idusuario
             )
             db.session.add(nueva_factura)
-            db.session.flush()
+            db.session.flush()  # Obtener ID de la factura
 
-            # Crear pago (solo tarjeta, compra online)
-            nuevo_pago = Pago(
-                fecha_pago=fecha_pago,
-                monto=monto,
-                metodo_pago='tarjeta',
-                referencia_pago='',
-                estado_pago='completado',
-                proveedor_pago='Pasarela Ficticia',
-                token_transaccion='TOKEN-DE-PRUEBA',
-                ventas_factura_idventas_factura=nueva_factura.idventas_factura
-            )
-            db.session.add(nuevo_pago)
-
-            # Guardar detalle de la venta
+            # Crear detalles de la venta
             for item in carrito_items:
                 producto = Producto.query.get(item.producto_idproducto)
                 detalle = DetalleVenta(
                     cantidad=item.cantidad,
                     precio_unitario=producto.precio_unitario,
-                    producto_idproducto=producto.idproducto,
+                    subtotal=item.cantidad * producto.precio_unitario,
+                    producto_idproducto=item.producto_idproducto,
                     ventas_factura_idventas_factura=nueva_factura.idventas_factura
                 )
                 db.session.add(detalle)
-
-            # Vaciar carrito
-            for item in carrito_items:
-                db.session.delete(item)
-
+                db.session.delete(item)  # Vaciar el carrito después de crear los detalles
             db.session.commit()
 
-            # Descargar la factura en PDF directamente
-            return factura_pdf(nueva_factura.idventas_factura)
+            # Crear pago
+            nuevo_pago = Pago(
+                fecha_pago=fecha_pago,
+                monto=monto,
+                metodo_pago='tarjeta',
+                referencia_pago='',  # Puedes usar número de tarjeta o CVV como referencia, pero no es seguro; usa tokenización real
+                estado_pago='completado',
+                proveedor_pago='Stripe/PayPal',  # Ajusta según tu integración
+                token_transaccion='',  # Genera un token real en producción
+                ventas_factura_idventas_factura=nueva_factura.idventas_factura
+            )
+            db.session.add(nuevo_pago)
+            db.session.commit()
+
+            # Generar PDF
+            pdf_buffer = generar_factura_pdf(nueva_factura.idventas_factura, monto, 'tarjeta')
+
+            # Descargar PDF
+            response = make_response(pdf_buffer.getvalue())
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'attachment; filename=factura_{nueva_factura.idventas_factura}.pdf'
+            flash("Pago realizado exitosamente. Descargando factura.", "success")
+            return response
 
         except Exception as e:
             db.session.rollback()
@@ -79,62 +95,30 @@ def nuevo_pago():
 
     return render_template('pago_nuevo.html')
 
+@pago.route('/pago/<int:id>')
+def detalle_pago(id):
+    pago = Pago.query.get_or_404(id)
+    return render_template('pago_detalle.html', pago=pago)
 
-# ---- RUTA PARA GENERAR FACTURA PDF ----
-@pago.route('/factura/<int:id>')
-def factura_pdf(id):
-    factura = VentaFactura.query.get_or_404(id)
-    pago = Pago.query.filter_by(ventas_factura_idventas_factura=id).first()
-    usuario = Users.query.get(factura.usuario_idusuario)
-    detalles = DetalleVenta.query.filter_by(ventas_factura_idventas_factura=id).all()
-
+def generar_factura_pdf(id_factura, monto, metodo_pago):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
 
     # Encabezado
     c.setFont("Helvetica-Bold", 18)
-    c.drawString(200, 750, "FACTURA DE COMPRA")
+    c.drawString(200, height - inch, "FACTURA JDNS Comunicaciones")
 
-    # Datos cliente
+    # Datos del pago
     c.setFont("Helvetica", 12)
-    c.drawString(50, 720, f"Factura ID: {factura.idventas_factura}")
-    c.drawString(50, 705, f"Cliente: {usuario.nombre} - {usuario.correo}")
-    c.drawString(50, 690, f"Fecha: {factura.fecha_venta.strftime('%Y-%m-%d %H:%M')}")
-    c.drawString(50, 675, f"Método de Pago: {pago.metodo_pago}")
+    c.drawString(inch, height - 2*inch, f"Factura ID: {id_factura}")
+    c.drawString(inch, height - 2.5*inch, f"Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    c.drawString(inch, height - 3*inch, f"Método de Pago: {metodo_pago}")
+    c.drawString(inch, height - 3.5*inch, f"Monto: ${monto:.2f}")
 
-    # Encabezado tabla productos
-    y = 640
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(50, y, "Producto")
-    c.drawString(300, y, "Cantidad")
-    c.drawString(400, y, "Precio Unitario")
-    c.drawString(500, y, "Subtotal")
+    # Pie de página
+    c.drawString(inch, inch, "Gracias por su compra en JDNS Comunicaciones")
 
-    # Listado de productos desde DetalleVenta
-    c.setFont("Helvetica", 12)
-    y -= 20
-    for detalle in detalles:
-        producto = Producto.query.get(detalle.producto_idproducto)
-        subtotal = float(detalle.precio_unitario) * detalle.cantidad
-        c.drawString(50, y, producto.nombre)
-        c.drawString(300, y, str(detalle.cantidad))
-        c.drawString(400, y, f"${float(detalle.precio_unitario):.2f}")
-        c.drawString(500, y, f"${subtotal:.2f}")
-        y -= 20
-
-    # Total
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(400, y - 10, "TOTAL:")
-    c.drawString(500, y - 10, f"${float(factura.total):.2f}")
-
-    c.showPage()
     c.save()
-
     buffer.seek(0)
-    return send_file(
-        buffer,
-        as_attachment=True,  # <<--- esto hace que se descargue automáticamente
-        download_name=f"factura_{factura.idventas_factura}.pdf",
-        mimetype='application/pdf'
-    )
+    return buffer

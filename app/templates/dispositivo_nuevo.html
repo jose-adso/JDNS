@@ -1,32 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Nuevo Dispositivo</title>
-</head>
-<body>
-    <h1>Nuevo Dispositivo</h1>
-    <form method="POST">
-        <label>Marca: <input type="text" name="marca" required></label><br>
-        <label>Color: <input type="text" name="color" required></label><br>
-        <label>IMEI: <input type="text" name="imei" required></label><br>
-        <label>Problema: <textarea name="problema" required></textarea></label><br>
-        <label>Usuario Asociado: 
-            <select name="usuario_idusuario" required>
-                {% for usuario in usuarios %}
-                    <option value="{{ usuario.idusuario }}">{{ usuario.nombre }}</option>
-                {% endfor %}
-            </select>
-            <label>Dispositivo</label>
-            
-            <select name="dispositivo_iddispositivo" required>
-                {% for d in dispositivos %}
-                    <option value="{{ d.iddispositivo }}">{{ d.marca }} - {{ d.imei }}</option>
-                {% endfor %}
-            </select>
+{% extends "base.html" %}
+{% block title %}Nuevo Dispositivo{% endblock %}
+{% block content %}
 
-        </label><br>
-        <button type="submit">Guardar</button>
-    </form>
-    <a href="{{ url_for('dispositivo.listar_dispositivos') }}">Cancelar</a>
-</body>
-</html>
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0"><i class="bi bi-phone"></i> Nuevo Dispositivo</h4>
+    </div>
+    <div class="card-body">
+      <form method="POST" class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label">Marca</label>
+          <input type="text" name="marca" class="form-control" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Color</label>
+          <input type="text" name="color" class="form-control" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">IMEI / Nº Serie</label>
+          <input type="text" name="imei" class="form-control" required>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Problema</label>
+          <textarea name="problema" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save"></i> Guardar
+          </button>
+          <a href="{{ url_for('dispositivo.listar_dispositivos') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

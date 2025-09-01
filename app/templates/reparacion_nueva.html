@@ -1,36 +1,73 @@
-<h2>Nueva Reparación</h2>
-<form method="POST">
-  <label>Fecha Ingreso</label>
-  <input type="date" name="fecha_ingreso" required>
+{% extends "base.html" %}
+{% block title %}Nueva Reparación{% endblock %}
+{% block content %}
 
-  <label>Estado</label>
-  <input type="text" name="estado" required>
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-tools"></i> Nueva Reparación</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="row g-3">
 
-  <label>Problema Reparación</label>
-  <textarea name="problema_reparacion" required></textarea>
+                <div class="col-md-6">
+                    <label class="form-label">Fecha Ingreso</label>
+                    <input type="date" name="fecha_ingreso" class="form-control" required>
+                </div>
 
-  <label>Costo</label>
-  <input type="number" name="costo" required>
+                <div class="col-md-6">
+                    <label class="form-label">Fecha Entrega</label>
+                    <input type="date" name="fecha_entrega" class="form-control" required>
+                </div>
 
-  <label>Fecha Entrega</label>
-  <input type="date" name="fecha_entrega" required>
+                <div class="col-md-6">
+                    <label class="form-label">Estado</label>
+                    <input type="text" name="estado" class="form-control" placeholder="Ej: Pendiente" required>
+                </div>
 
-  <label>Teléfono</label>
-  <input type="number" name="telefono_jtelfono" required>
+                <div class="col-md-6">
+                    <label class="form-label">Costo</label>
+                    <input type="number" name="costo" class="form-control" placeholder="Ej: 200000" required>
+                </div>
 
-  <label>Usuario</label>
-  <select name="usuario_idusuario">
-    {% for u in usuarios %}
-      <option value="{{ u.idusuario }}">{{ u.nombre }}</option>
-    {% endfor %}
-  </select>
+                <div class="col-12">
+                    <label class="form-label">Problema Reparación</label>
+                    <textarea name="problema_reparacion" class="form-control" rows="3" placeholder="Describa el problema..." required></textarea>
+                </div>
 
-  <label>Dispositivo</label>
-  <select name="dispositivo_iddispositivo">
-    {% for d in dispositivos %}
-      <option value="{{ d.iddispositivo }}">{{ d.marca }} - {{ d.imei }}</option>
-    {% endfor %}
-  </select>
+                <div class="col-md-6">
+                    <label class="form-label">Teléfono</label>
+                    <input type="number" name="telefono_jtelfono" class="form-control" placeholder="Número de contacto" required>
+                </div>
 
-  <button type="submit" class="btn btn-success">Guardar</button>
-</form>
+                <div class="col-md-6">
+                    <label class="form-label">Usuario</label>
+                    <select name="usuario_idusuario" class="form-select" required>
+                        <option value="">Seleccione un usuario</option>
+                        {% for u in usuarios %}
+                          <option value="{{ u.idusuario }}">{{ u.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Dispositivo</label>
+                    <select name="dispositivo_iddispositivo" class="form-select" required>
+                        <option value="">Seleccione un dispositivo</option>
+                        {% for d in dispositivos %}
+                          <option value="{{ d.iddispositivo }}">{{ d.marca }} - {{ d.imei }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
