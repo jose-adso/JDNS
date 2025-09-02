@@ -15,11 +15,7 @@ instance/
 *.bak
 *.tmp
 *.~
-# Ignorar archivos de Flask
-*.db
-*.sqlite
-*.sqlite3
-*.flaskenv
+
 *.env
 # Ignorar archivos de VSCode
 .vscode/

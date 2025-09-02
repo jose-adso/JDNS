@@ -1,32 +1,38 @@
-/* Estilo para las cards */
 .card {
-  display: flex; /* Usa Flexbox */
-  flex-direction: column; /* Apila los elementos en columna */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center; /* Centra horizontalmente */
-  height: 100%; /* Asegura que la card use todo el alto disponible */
-  border: 1px solid #ddd; /* Borde ligero */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  transition: transform 0.2s; /* Transición suave al hacer hover */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  color: #000;
 }
 
 .card:hover {
-  transform: scale(1.02); /* Efecto de aumento al pasar el ratón */
+  transform: scale(1.02);
+  cursor: pointer;
+  border-color: #007bff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  transform: translateY(-8px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-img-top {
-  max-width: 200px; /* Ancho máximo de la imagen */
-  max-height: 150px; /* Altura máxima de la imagen */
-  width: auto; /* Ajusta el ancho automáticamente */
-  height: auto; /* Ajusta la altura automáticamente */
-  object-fit: cover; /* Recorta la imagen para mantener proporciones */
-  margin-bottom: 10px; /* Espaciado inferior para separar de texto */
+  max-width: 200px;
+  max-height: 150px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Agregando estilos completos para JDNS COMUNICACIONES */
-
-/* Variables CSS para colores corporativos */
 :root {
   --primary-color: #1c3d46;
   --secondary-color: #f97316;
@@ -43,7 +49,6 @@
   --gray-900: #0f172a;
 }
 
-/* Reset y estilos base */
 * {
   margin: 0;
   padding: 0;
@@ -57,7 +62,6 @@ body {
   background-color: var(--white);
 }
 
-/* Header y Navegación */
 .navbar {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -97,10 +101,8 @@ body {
   transform: translateY(-2px);
 }
 
-/* Secciones con fondo parallax */
 .hero-section {
-  background: linear-gradient(rgba(150, 211, 226, 0.8), rgba(10, 64, 73, 0.8)),
-    url("../public/modern-technology-workspace-with-smartphones-lapto.png");
+  background: linear-gradient(rgba(150, 211, 226, 0.8), rgba(10, 64, 73, 0.8)), url("../public/modern-technology-workspace-with-smartphones-lapto.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -112,30 +114,26 @@ body {
 }
 
 .products-bg {
-  background: linear-gradient(rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.1)),
-    url("../public/premium-smartphones-and-laptops-display-showcase-w.png");
+  background: linear-gradient(rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.1)), url("../public/premium-smartphones-and-laptops-display-showcase-w.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 .services-bg {
-  background: linear-gradient(rgba(8, 145, 178, 0.1), rgba(6, 182, 212, 0.1)),
-    url("../public/professional-tech-repair-workshop-with-tools-and-e.png");
+  background: linear-gradient(rgba(8, 145, 178, 0.1), rgba(6, 182, 212, 0.1)), url("../public/professional-tech-repair-workshop-with-tools-and-e.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 .brands-bg {
-  background: linear-gradient(rgba(249, 115, 22, 0.05), rgba(249, 115, 22, 0.05)),
-    url("../public/modern-electronics-store-with-organized-product-ca.png");
+  background: linear-gradient(rgba(249, 115, 22, 0.05), rgba(249, 115, 22, 0.05)), url("../public/modern-electronics-store-with-organized-product-ca.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
-/* Títulos y texto */
 .hero-title {
   font-size: 3.5rem;
   font-weight: 700;
@@ -170,7 +168,6 @@ body {
   border-radius: 2px;
 }
 
-/* Botones */
 .btn-primary-custom {
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   border: none;
@@ -205,7 +202,6 @@ body {
   box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
 }
 
-/* Cards mejoradas */
 .product-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -251,7 +247,6 @@ body {
   font-size: 2rem;
 }
 
-/* Estadísticas */
 .stats-section {
   background: var(--dark-bg);
   color: var(--white);
@@ -276,7 +271,6 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Logos de marcas */
 .brand-logo {
   width: 120px;
   height: 80px;
@@ -292,7 +286,6 @@ body {
   transform: scale(1.1);
 }
 
-/* Carrusel */
 .carousel-item img {
   height: 400px;
   object-fit: cover;
@@ -308,7 +301,6 @@ body {
   background-color: var(--primary-color);
 }
 
-/* Mapa */
 .map-container {
   border-radius: 15px;
   overflow: hidden;
@@ -321,7 +313,6 @@ body {
   border: none;
 }
 
-/* Formulario de contacto */
 .contact-form {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -343,7 +334,6 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(8, 145, 178, 0.25);
 }
 
-/* Footer */
 .footer {
   background: var(--dark-bg);
   color: var(--white);
@@ -365,7 +355,6 @@ body {
   color: var(--secondary-color);
 }
 
-/* Animaciones */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -381,29 +370,23 @@ body {
   animation: fadeInUp 0.8s ease-out;
 }
 
-
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
   }
-
   .hero-subtitle {
     font-size: 1.1rem;
   }
-
   .section-title {
     font-size: 2rem;
   }
-
   .stat-number {
     font-size: 2rem;
   }
-
   .brand-logo {
     width: 100px;
     height: 60px;
   }
-
   .contact-form {
     padding: 2rem;
   }
@@ -413,23 +396,19 @@ body {
   .hero-section {
     background-attachment: scroll;
   }
-
   .products-bg,
   .services-bg,
   .brands-bg {
     background-attachment: scroll;
   }
-
   .navbar-brand {
     font-size: 1.5rem;
   }
-
   .btn-primary-custom {
     padding: 0.8rem 1.5rem;
     font-size: 1rem;
   }
 }
-
 
 .text-gradient {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -453,53 +432,10 @@ body {
 }
 
 .login-background {
-    background-image: url('{{ url_for("static", filename="public/modern-electronics-store-with-organized-product-ca.png") }}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    position: relative;
+  background-image: url('{{ url_for(\"static\", filename=\"public/modern-electronics-store-with-organized-product-ca.png\") }}');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  position: relative;
 }
-
-.card {
-    border-radius: 10px;
-    backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado (opcional, requiere soporte) */
-}
-
-.card-header {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.card-body {
-    padding: 2rem;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.alert {
-    margin-bottom: 1rem;
-}
-
-/* Ajuste para que el texto sea legible sobre el fondo */
-.card {
-    color: #000;
-}
-
-.servicios {
-  background: linear-gradient(to bottom, #90C3D4 0%, #649BA7 100%);
-}
-

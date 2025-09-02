@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 from app import db
+from datetime import datetime
 
 class Users(db.Model, UserMixin):
     __tablename__ = 'usuario'
@@ -93,10 +94,9 @@ class VentaFactura(db.Model):
     fecha_venta = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')
     tipo_venta = db.Column(db.Enum('fisica', 'online', name='tipo_venta_enum'))
     estado_envio = db.Column(db.Enum('pendiente', 'pagado', 'anulado', name='estado_envio_enum'), default='pendiente')
-    total = db.Column(db.VARCHAR(45), nullable=False)
-    
-from datetime import datetime
-from app import db
+    total = db.Column(db.Numeric(10, 2), nullable=False)   
+
+
 
 class Pago(db.Model):
     __tablename__ = 'pago'
@@ -110,6 +110,10 @@ class Pago(db.Model):
     token_transaccion = db.Column(db.String(100))
     ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'))
 
+    
+    factura = db.relationship('VentaFactura', backref='pagos', lazy=True)
+
+
 
 class Carrito(db.Model):
     __tablename__ = 'carrito'
@@ -118,6 +122,10 @@ class Carrito(db.Model):
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     fecha_agregado = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    
+    producto = db.relationship('Producto', backref='carritos', lazy=True)
+
 
     
 class Notificacion(db.Model):
@@ -145,8 +153,10 @@ class DetalleVenta(db.Model):
     iddetalles = db.Column(db.Integer, primary_key=True)
     cantidad = db.Column(db.Integer, nullable=False)
     precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
+    subtotal = db.Column(db.Numeric(10, 2), nullable=False)  
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'), nullable=False)
+
     
     
 
