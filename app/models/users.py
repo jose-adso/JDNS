@@ -94,7 +94,9 @@ class VentaFactura(db.Model):
     fecha_venta = db.Column(db.DateTime, nullable=False, default='CURRENT_TIMESTAMP')
     tipo_venta = db.Column(db.Enum('fisica', 'online', name='tipo_venta_enum'))
     estado_envio = db.Column(db.Enum('pendiente', 'pagado', 'anulado', name='estado_envio_enum'), default='pendiente')
-    total = db.Column(db.Numeric(10, 2), nullable=False)   
+    total = db.Column(db.Numeric(10, 2), nullable=False) 
+    usuario = db.relationship('Users', backref='ventas_facturas')  
+    
 
 
 
@@ -156,6 +158,7 @@ class DetalleVenta(db.Model):
     subtotal = db.Column(db.Numeric(10, 2), nullable=False)  
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'), nullable=False)
+    producto = db.relationship('Producto', backref='detalle_ventas')
 
     
     

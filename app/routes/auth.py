@@ -56,16 +56,16 @@ def logout():
 @bp.route('/register', methods=['GET', 'POST'])
 def register_cliente():
     if request.method == 'POST':
-        nombre = request.form['nombre'].strip()  # Quitamos espacios
+        nombre = request.form['nombre'].strip()
         correo = request.form['correo']
         telefono = request.form['telefono']
         password = request.form['password']
         direccion = request.form['direccion']
 
-       
         if Users.query.filter(func.lower(Users.nombre) == func.lower(nombre)).first():
             flash('El nombre de usuario ya existe. Por favor elige otro.', 'danger')
             return redirect(url_for('auth.register_cliente'))
+
         if Users.query.filter_by(correo=correo).first():
             flash('El correo ya está registrado. Por favor usa otro.', 'danger')
             return redirect(url_for('auth.register_cliente'))
@@ -77,11 +77,11 @@ def register_cliente():
             telefono=telefono,
             direccion=direccion,
             password=hashed_password,
-            rol='cliente'  
+            rol='cliente'
         )
         db.session.add(new_user)
         db.session.commit()
-        
+
         flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('auth.login'))
     
@@ -90,7 +90,7 @@ def register_cliente():
 @bp.route('/register_admin', methods=['GET', 'POST'])
 @login_required
 def register_admin():
-    if current_user.rol != 'admin':  # Corregimos la comparación (era 'Admin')
+    if current_user.rol != 'admin':
         return "No tienes permiso para acceder a esta página", 403
 
     if request.method == 'POST':
@@ -105,7 +105,7 @@ def register_admin():
             flash('Rol no permitido.', 'danger')
             return redirect(url_for('auth.register_admin'))
 
-        # Verificamos si el nombre ya existe (ignorando mayúsculas/minúsculas)
+        
         if Users.query.filter(func.lower(Users.nombre) == func.lower(nombre)).first():
             flash('El nombre de usuario ya existe. Por favor elige otro.', 'danger')
             return redirect(url_for('auth.register_admin'))

@@ -5,10 +5,10 @@ import pytest
 def app():
     app = create_app()
     with app.app_context():
-        db.create_all()  # Create tables within the context
-        yield app
-        db.session.remove()  # Cleanup session objects
-        db.drop_all()
+    db.create_all()
+    yield app
+    db.session.remove()
+    db.drop_all()
   
 
 @pytest.fixture
@@ -20,6 +20,6 @@ def user(app):
     from app.models.users import Users
     user = Users(nameUser="test_user", passwordUser="test_password")
     db.session.add(user)
-    db.session.commit()  # Commit changes within the context
+    db.session.commit()
     yield user    
-  # Cleanup changes within the context
+    

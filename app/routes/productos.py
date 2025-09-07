@@ -100,7 +100,6 @@ def crear():
         if 'imagen' in request.files:
             file = request.files['imagen']
             if file and allowed_file(file.filename):
-                # Crear el directorio si no existe
                 if not os.path.exists(UPLOAD_FOLDER):
                     os.makedirs(UPLOAD_FOLDER)
                 filename = secure_filename(f"{nuevo_producto.idproducto}.jpg")
@@ -167,16 +166,14 @@ def editar(id):
         producto.empresa_idempresa = empresa_idempresa
         db.session.commit()
 
-        # Manejo de la imagen
         if 'imagen' in request.files:
             file = request.files['imagen']
             if file and allowed_file(file.filename):
-                # Crear el directorio si no existe
                 if not os.path.exists(UPLOAD_FOLDER):
                     os.makedirs(UPLOAD_FOLDER)
                 filename = secure_filename(f"{producto.idproducto}.jpg")
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
-                producto.imagen = f"images/productos/{filename}"  # Actualizamos la ruta
+                producto.imagen = f"images/productos/{filename}"
                 db.session.commit()
                 flash('Producto y imagen actualizados exitosamente.', 'success')
             else:

@@ -12,15 +12,13 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
 pago = Blueprint('pago', __name__)
-
-# Ruta para mostrar formulario de pago
 @pago.route('/pago/nuevo', methods=['GET'])
 @login_required
 def pago_nuevo():
     return render_template("pago_nuevo.html")
 
 
-# Ruta para procesar el pago
+@pago.route('/pago/nuevo', methods=['POST'])
 @pago.route('/pago/nuevo', methods=['POST'])
 @login_required
 def nuevo_pago():
@@ -77,15 +75,15 @@ def nuevo_pago():
 
         db.session.commit()
 
-        # 📄 Generar factura PDF con logo
+        
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
         elementos = []
         styles = getSampleStyleSheet()
 
-        # Insertar logo (asegúrate de que la ruta sea correcta)
+        
         try:
-            # Usar la carpeta estática de la aplicación para obtener una ruta absoluta confiable
+            
             logo_path = os.path.join(current_app.static_folder, 'logo.png')
             logo_path = os.path.abspath(logo_path)
             if os.path.exists(logo_path):
@@ -96,17 +94,17 @@ def nuevo_pago():
         except Exception:
             elementos.append(Paragraph("<b>[Logo no encontrado]</b>", styles["Normal"]))
 
-        # Encabezado empresa
+        
         elementos.append(Paragraph("<b>JDNS Comunicaciones</b>", styles["Title"]))
         elementos.append(Paragraph("NIT: 1101755776-0", styles["Normal"]))
         elementos.append(Paragraph(f"Cliente: {current_user.nombre}", styles["Normal"]))
         elementos.append(Paragraph(f"Fecha: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')}", styles["Normal"]))
         elementos.append(Spacer(1, 20))
 
-        # Encabezado de tabla
+        
         data = [["Producto", "Cantidad", "P. Unitario", "Subtotal"]]
 
-        # Filas con productos
+        
         for item in productos_factura:
             subtotal = Decimal(str(item.cantidad)) * Decimal(str(item.producto.precio_unitario))
             data.append([
@@ -116,10 +114,10 @@ def nuevo_pago():
                 f"${subtotal}"
             ])
 
-        # Total
+        
         data.append(["", "", "Total:", f"${total}"])
 
-        # Crear tabla estilizada
+        
         tabla = Table(data, colWidths=[200, 80, 100, 100])
         tabla.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
@@ -140,3 +138,82 @@ def nuevo_pago():
         db.session.rollback()
         flash(f"Error al procesar el pago: {str(e)}", "danger")
         return redirect(url_for("pago.pago_nuevo"))
+    
+@pago.route('/pagos/listar')
+@login_required
+def listar_pagos():
+    
+    if current_user.rol == 'admin':
+        pagos = Pago.query.order_by(Pago.fecha_pago.desc()).all()
+    else:
+        pagos = Pago.query.join(VentaFactura).filter(VentaFactura.usuario_idusuario == current_user.idusuario).order_by(Pago.fecha_pago.desc()).all()
+    return render_template('listar_pagos.html', pagos=pagos)
+
+@pago.route('/pagos/factura/<int:factura_id>')
+@login_required
+def descargar_factura(factura_id):
+    factura = VentaFactura.query.get_or_404(factura_id)
+    if current_user.rol != 'admin' and factura.usuario_idusuario != current_user.idusuario:
+        flash("No tienes permiso para ver esta factura", "danger")
+        return redirect(url_for('pago.listar_pagos'))
+
+    detalles = DetalleVenta.query.filter_by(ventas_factura_idventas_factura=factura_id).all()
+    usuario = factura.usuario  # Asegúrate de tener relación a usuario desde VentaFactura
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elementos = []
+    styles = getSampleStyleSheet()
+
+    
+    try:
+        logo_path = os.path.join(current_app.static_folder, 'logo.png')
+        logo_path = os.path.abspath(logo_path)
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=100, height=60)
+            elementos.append(logo)
+        else:
+            elementos.append(Paragraph("[Logo no encontrado]", styles["Normal"]))
+    except Exception:
+        elementos.append(Paragraph("[Logo no encontrado]", styles["Normal"]))
+
+    elementos.append(Paragraph("JDNS Comunicaciones", styles["Title"]))
+    elementos.append(Paragraph("NIT: 1101755776-0", styles["Normal"]))
+    elementos.append(Paragraph(f"Cliente: {usuario.nombre}", styles["Normal"]))
+    elementos.append(Paragraph(f"Fecha: {factura.fecha_venta.strftime('%d/%m/%Y %H:%M')}", styles["Normal"]))
+    elementos.append(Spacer(1, 20))
+
+    data = [["Producto", "Cantidad", "P. Unitario", "Subtotal"]]
+    for det in detalles:
+        
+        precio_unitario = float(det.precio_unitario)
+        subtotal = float(det.subtotal)
+        data.append([
+            det.producto.nombre,
+            str(det.cantidad),
+            f"${precio_unitario:,.2f}",
+            f"${subtotal:,.2f}"
+        ])
+    total = float(factura.total)
+    data.append(["", "", "Total:", f"${total:,.2f}"])
+
+    tabla = Table(data, colWidths=[200, 80, 100, 100])
+    tabla.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elementos.append(tabla)
+    doc.build(elementos)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"factura_{factura.idventas_factura}.pdf",
+        mimetype="application/pdf"
+    )
+
+

@@ -1,0 +1,60 @@
+{% extends "plantilla.html" %}
+{% block title %}Lista de Pagos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4 text-primary">Listado de Pagos</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if pagos %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Estado</th>
+                        <th>Factura PDF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pago in pagos %}
+                    <tr>
+                        <td>{{ pago.idpago }}</td>
+                        <td>{{ pago.fecha_pago.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>$ {{ pago.monto }}</td>
+                        <td>{{ pago.metodo_pago|capitalize }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if pago.estado_pago == 'completado' else 'secondary' }}">
+                                {{ pago.estado_pago|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="{{ url_for('pago.descargar_factura', factura_id=pago.ventas_factura_idventas_factura) }}"
+                               target="_blank">
+                                <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">No hay pagos registrados.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -3,64 +3,64 @@
 {% block title %}Panel del Cliente - JDNS Comunicaciones{% endblock %}
 
 {% block content %}
-   
-    <!-- Hero Section -->
-    <section id="inicio" class="parallax-section hero-section">
-        <div class="parallax-content w-100">
-            <div class="container">
-                <div class="row justify-content-center text-center text-white">
-                    <div class="col-lg-8">
-                        <h1 class="display-4 fw-bold mb-4">
-                            Líderes en Venta y Reparación de Equipos Móviles y de Cómputo
-                        </h1>
-                        <p class="lead mb-5">
-                            Más de 15 años de experiencia trabajando con todas las marcas. 
-                            Soluciones tecnológicas confiables para particulares y empresas.
-                        </p>
-                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                            <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-primary btn-lg px-4">
-    <i class="bi bi-phone me-2"></i>Ver Productos
-</a>
 
-                            <a href="#servicios" class="btn btn-secondary btn-lg px-4">
-                                <i class="bi bi-tools me-2"></i>Nuestros Servicios
-                            </a>
-                        </div>
+
+<section id="inicio" class="parallax-section hero-section">
+    <div class="parallax-content w-100">
+        <div class="container">
+            <div class="row justify-content-center text-center text-white">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Líderes en Venta y Reparación de Equipos Móviles y de Cómputo
+                    </h1>
+                    <p class="lead mb-5">
+                        Más de 15 años de experiencia trabajando con todas las marcas.
+                        Soluciones tecnológicas confiables para particulares y empresas.
+                    </p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-phone me-2"></i>Ver Productos
+                        </a>
+
+                        <a href="#servicios" class="btn btn-secondary btn-lg px-4">
+                            <i class="bi bi-tools me-2"></i>Nuestros Servicios
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Stats Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-number">15+</div>
-                    <p class="text-muted">Años de Experiencia</p>
-                </div>
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-number">50K+</div>
-                    <p class="text-muted">Equipos Reparados</p>
-                </div>
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-number">98%</div>
-                    <p class="text-muted">Satisfacción Cliente</p>
-                </div>
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-number">24/7</div>
-                    <p class="text-muted">Soporte Técnico</p>
-                </div>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-number">15+</div>
+                <p class="text-muted">Años de Experiencia</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-number">50K+</div>
+                <p class="text-muted">Equipos Reparados</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-number">98%</div>
+                <p class="text-muted">Satisfacción Cliente</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-number">24/7</div>
+                <p class="text-muted">Soporte Técnico</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
 
-    
 
 
-    <div class="servicios">
+
+<div class="servicios">
     <section id="servicios" class="parallax-section services-section py-5">
         <div class="parallax-content">
             <div class="container">
@@ -72,59 +72,61 @@
                 </div>
 
                 <div class="row g-4">
-    <div class="col-lg-3 col-md-6">
-        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="text-decoration-none text-dark">
-            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
-                <div class="card-body">
-                    <i class="bi bi-phone display-4 text-primary-custom mb-3"></i>
-                    <h5 class="card-title">Reparación Móviles</h5>
-                    <p class="card-text">Reparamos pantallas, baterías, cámaras y más. Todas las marcas.</p>
-                </div>
-            </div>
-        </a>
-    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="text-decoration-none text-dark">
+                            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <i class="bi bi-phone display-4 text-primary-custom mb-3"></i>
+                                    <h5 class="card-title">Reparación Móviles</h5>
+                                    <p class="card-text">Reparamos pantallas, baterías, cámaras y más. Todas las marcas.
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
 
-    <div class="col-lg-3 col-md-6">
-        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="text-decoration-none text-dark">
-            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
-                <div class="card-body">
-                    <i class="bi bi-laptop display-4 text-primary-custom mb-3"></i>
-                    <h5 class="card-title">Reparación Laptops</h5>
-                    <p class="card-text">Diagnóstico y reparación de computadoras portátiles y de escritorio.</p>
-                </div>
-            </div>
-        </a>
-    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="text-decoration-none text-dark">
+                            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <i class="bi bi-laptop display-4 text-primary-custom mb-3"></i>
+                                    <h5 class="card-title">Reparación Laptops</h5>
+                                    <p class="card-text">Diagnóstico y reparación de computadoras portátiles y de
+                                        escritorio.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
 
-    <div class="col-lg-3 col-md-6">
-        <a href="{{ url_for('producto.listar_productos') }}" class="text-decoration-none text-dark">
-            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
-                <div class="card-body">
-                    <i class="bi bi-cart display-4 text-primary-custom mb-3"></i>
-                    <h5 class="card-title">Venta Equipos</h5>
-                    <p class="card-text">Equipos nuevos y reacondicionados con garantía oficial.</p>
-                </div>
-            </div>
-        </a>
-    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ url_for('producto.listar_productos') }}" class="text-decoration-none text-dark">
+                            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <i class="bi bi-cart display-4 text-primary-custom mb-3"></i>
+                                    <h5 class="card-title">Venta Equipos</h5>
+                                    <p class="card-text">Equipos nuevos y reacondicionados con garantía oficial.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
 
-    <div class="col-lg-3 col-md-6">
-        <a href="{{ url_for('producto.listar_productos') }}" class="text-decoration-none text-dark">
-            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
-                <div class="card-body">
-                    <i class="bi bi-headphones display-4 text-primary-custom mb-3"></i>
-                    <h5 class="card-title">Accesorios</h5>
-                    <p class="card-text">Fundas, cargadores, audífonos y más accesorios originales.</p>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ url_for('producto.listar_productos') }}" class="text-decoration-none text-dark">
+                            <div class="card card-glass h-100 text-center" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <i class="bi bi-headphones display-4 text-primary-custom mb-3"></i>
+                                    <h5 class="card-title">Accesorios</h5>
+                                    <p class="card-text">Fundas, cargadores, audífonos y más accesorios originales.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </a>
-    </div>
-</div>
-                
-                
+
+
     </section>
 
-    <!-- Brands Section -->
+
     <section id="marcas" class="parallax-section brands-section py-5">
         <div class="parallax-content">
             <div class="container">
@@ -134,87 +136,91 @@
                         <p class="lead">Trabajamos con las marcas líderes del mercado tecnológico</p>
                     </div>
                 </div>
-                
+
                 <div class="row justify-content-center align-items-center g-4">
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/apple-logo.png') }}" alt="Apple" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/apple-logo.png') }}" alt="Apple"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/samsung-logo.png') }}" alt="Samsung" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/samsung-logo.png') }}" alt="Samsung"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/dell-logo.png') }}" alt="Dell" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/dell-logo.png') }}" alt="Dell"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/hp-logo-abstract.png') }}" alt="HP" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/hp-logo-abstract.png') }}" alt="HP"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/lenovo-logo.png') }}" alt="Lenovo" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/lenovo-logo.png') }}" alt="Lenovo"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                     <div class="col-lg-2 col-md-3 col-4 text-center">
-                        <img src="{{ url_for('static', filename='public/huawei-logo.png') }}" alt="Huawei" class="img-fluid brand-logo" style="max-height: 80px;">
+                        <img src="{{ url_for('static', filename='public/huawei-logo.png') }}" alt="Huawei"
+                            class="img-fluid brand-logo" style="max-height: 80px;">
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    </div>
+</div>
 
-    <!-- Location Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8 text-center">
-                    <h2 class="display-5 fw-bold text-primary-custom mb-4">Nuestra Ubicación</h2>
-                    <p class="lead text-muted">Visítanos en nuestro local en Vélez, Santander</p>
-                </div>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-5 fw-bold text-primary-custom mb-4">Nuestra Ubicación</h2>
+                <p class="lead text-muted">Visítanos en nuestro local en Vélez, Santander</p>
             </div>
-            
-            <div class="row g-4 align-items-center">
-                <div class="col-lg-6">
-                    <div class="card card-glass">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary-custom">
-                                <i class="bi bi-geo-alt me-2"></i>Información de Contacto
-                            </h5>
-                            <div class="mb-3">
-                                <strong>Dirección:</strong><br>
-                                Carrera 2 4 30, Vélez, Santander
-                            </div>
-                            <div class="mb-3">
-                                <strong>Teléfono:</strong><br>
-                                <a href="tel:+573001234567" class="text-decoration-none">+57 300 123 4567</a>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Email:</strong><br>
-                                <a href="mailto:info@jdnscomunicaciones.com" class="text-decoration-none">info@jdnscomunicaciones.com</a>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Horarios:</strong><br>
-                                Lunes a Viernes: 8:00 AM - 6:00 PM<br>
-                                Sábados: 8:00 AM - 4:00 PM<br>
-                                Domingos: Cerrado
-                            </div>
+        </div>
+
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <div class="card card-glass">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary-custom">
+                            <i class="bi bi-geo-alt me-2"></i>Información de Contacto
+                        </h5>
+                        <div class="mb-3">
+                            <strong>Dirección:</strong><br>
+                            Carrera 2 4 30, Vélez, Santander
+                        </div>
+                        <div class="mb-3">
+                            <strong>Teléfono:</strong><br>
+                            <a href="tel:+573001234567" class="text-decoration-none">+57 300 123 4567</a>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Email:</strong><br>
+                            <a href="mailto:info@jdnscomunicaciones.com"
+                                class="text-decoration-none">info@jdnscomunicaciones.com</a>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Horarios:</strong><br>
+                            Lunes a Viernes: 8:00 AM - 6:00 PM<br>
+                            Sábados: 8:00 AM - 4:00 PM<br>
+                            Domingos: Cerrado
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-lg-6">
-                    <div class="ratio ratio-16x9">
-                        <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d-73.67154378255615!3d6.010342999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a4229f560e26b%3A0x2045f5c9e2b4c5a8!2sCra.%202%20%234-30%2C%20V%C3%A9lez%2C%20Santander!5e0!3m2!1ses!2sco!4v1635789012345!5m2!1ses!2sco"
-                            style="border:0;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerPolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ratio ratio-16x9">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d-73.67154378255615!3d6.010342999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a4229f560e26b%3A0x2045f5c9e2b4c5a8!2sCra.%202%20%234-30%2C%20V%C3%A9lez%2C%20Santander!5e0!3m2!1ses!2sco!4v1635789012345!5m2!1ses!2sco"
+                        style="border:0;" allowfullscreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
             </div>
         </div>
-   
+    </div>
 
-    <!-- Footer -->
+
+
     <footer class="bg-dark text-white py-5">
         <div class="container">
             <div class="row g-4">
@@ -222,14 +228,18 @@
                     <h5 class="text-primary-custom mb-3">
                         <i class="bi bi-phone me-2"></i>JDNS COMUNICACIONES
                     </h5>
-                    <p>Líderes en venta y reparación de equipos móviles y de cómputo. Más de 15 años de experiencia brindando soluciones tecnológicas confiables.</p>
+                    <p>Líderes en venta y reparación de equipos móviles y de cómputo. Más de 15 años de experiencia
+                        brindando soluciones tecnológicas confiables.</p>
                     <div class="d-flex gap-3">
-                        <a href="https://www.facebook.com/people/Jdns-Comunicaciones/pfbid0UDbfnLBdbhFTjtHxngKrAdyYT5EysxDzHHa17XwnGaRDAnMpyc6TkaQt7XHozpT2l/?rdid=wUU8GAQJAVeb5Oow&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F171t8dbovM%2F" target="_blank" class="text-white"><i class="bi bi-facebook fs-4"></i></a>
-                        <a href="https://instagram.com/jdnscomunicaciones" target="_blank" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
-                       <a href="https://wa.me/3123678307" target="_blank" class="text-white"><i class="bi bi-whatsapp fs-4"></i></a>
+                        <a href="https://www.facebook.com/people/Jdns-Comunicaciones/pfbid0UDbfnLBdbhFTjtHxngKrAdyYT5EysxDzHHa17XwnGaRDAnMpyc6TkaQt7XHozpT2l/?rdid=wUU8GAQJAVeb5Oow&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F171t8dbovM%2F"
+                            target="_blank" class="text-white"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="https://instagram.com/jdnscomunicaciones" target="_blank" class="text-white"><i
+                                class="bi bi-instagram fs-4"></i></a>
+                        <a href="https://wa.me/3123678307" target="_blank" class="text-white"><i
+                                class="bi bi-whatsapp fs-4"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-2">
                     <h6 class="mb-3">Servicios</h6>
                     <ul class="list-unstyled">
@@ -239,7 +249,7 @@
                         <li><a href="#servicios" class="text-white-50 text-decoration-none">Accesorios</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="col-lg-2">
                     <h6 class="mb-3">Marcas</h6>
                     <ul class="list-unstyled">
@@ -249,7 +259,7 @@
                         <li><a href="#marcas" class="text-white-50 text-decoration-none">HP</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="col-lg-4">
                     <h6 class="mb-3">Contacto</h6>
                     <ul class="list-unstyled">
@@ -268,9 +278,9 @@
                     </ul>
                 </div>
             </div>
-            
+
             <hr class="my-4">
-            
+
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <p class="mb-0">&copy; 2024 JDNS COMUNICACIONES. Todos los derechos reservados.</p>
@@ -283,9 +293,9 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -312,25 +322,25 @@
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
                 alert('Sesión cerrada exitosamente');
                 // Aquí puedes agregar la lógica para cerrar sesión
-               
+
             }
         }
 
         function enviarFormulario(event) {
             event.preventDefault();
-            
+
             // Obtener datos del formulario
             const formData = new FormData(event.target);
             const datos = Object.fromEntries(formData);
-            
+
             // Simular envío del formulario
             alert('¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.');
-            
+
             // Limpiar formulario
             event.target.reset();
-            
+
             // Aquí puedes agregar la lógica para enviar los datos a un servidor
             console.log('Datos del formulario:', datos);
         }
     </script>
-{% endblock %}
+    {% endblock %}

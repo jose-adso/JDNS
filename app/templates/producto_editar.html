@@ -49,7 +49,9 @@
             <label for="imagen">Imagen</label>
             <input type="file" class="form-control-file" id="imagen" name="imagen" accept="image/*">
             {% if producto.imagen %}
-                <img src="{{ url_for('static', filename=producto.imagen) }}" alt="Imagen de {{ producto.nombre }}" style="max-width: 100px; max-height: 100px;" onerror="this.src='{{ url_for('static', filename='images/placeholder.jpg') }}';">
+                {% set img_url = url_for('static', filename=producto.imagen) %}
+                {% set placeholder = url_for('static', filename='images/placeholder.jpg') %}
+                <img src="{{ img_url }}" alt="Imagen de {{ producto.nombre }}" style="max-width: 100px; max-height: 100px;" onerror="this.onerror=null;this.src='{{ placeholder }}';">
             {% else %}
                 <span>No disponible</span>
             {% endif %}

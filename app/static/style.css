@@ -102,7 +102,8 @@ body {
 }
 
 .hero-section {
-  background: linear-gradient(rgba(150, 211, 226, 0.8), rgba(10, 64, 73, 0.8)), url("../public/modern-technology-workspace-with-smartphones-lapto.png");
+  background: linear-gradient(rgba(150, 211, 226, 0.8), rgba(10, 64, 73, 0.8)),
+    url("/static/public/modern-technology-workspace-with-smartphones-lapto.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -114,21 +115,24 @@ body {
 }
 
 .products-bg {
-  background: linear-gradient(rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.1)), url("../public/premium-smartphones-and-laptops-display-showcase-w.png");
+  background: linear-gradient(rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.1)),
+    url("../public/premium-smartphones-and-laptops-display-showcase-w.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 .services-bg {
-  background: linear-gradient(rgba(8, 145, 178, 0.1), rgba(6, 182, 212, 0.1)), url("../public/professional-tech-repair-workshop-with-tools-and-e.png");
+  background: linear-gradient(rgba(8, 145, 178, 0.1), rgba(6, 182, 212, 0.1)),
+    url("/static/public/professional-tech-repair-workshop-with-tools-and-e.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 .brands-bg {
-  background: linear-gradient(rgba(249, 115, 22, 0.05), rgba(249, 115, 22, 0.05)), url("../public/modern-electronics-store-with-organized-product-ca.png");
+  background: linear-gradient(rgba(249, 115, 22, 0.05), rgba(249, 115, 22, 0.05)),
+    url("/static/public/modern-electronics-store-with-organized-product-ca.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -432,7 +436,7 @@ body {
 }
 
 .login-background {
-  background-image: url('{{ url_for(\"static\", filename=\"public/modern-electronics-store-with-organized-product-ca.png\") }}');
+  background-image: url("/static/public/modern-electronics-store-with-organized-product-ca.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
