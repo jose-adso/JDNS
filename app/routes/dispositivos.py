@@ -19,8 +19,7 @@ def nuevo_dispositivo():
         nuevo_dispositivo = Dispositivo(
             marca=request.form['marca'],
             color=request.form['color'],
-            imei=request.form['imei'],  # 
-            problema=request.form['problema'],
+            imei=request.form['imei'],  
             usuario_idusuario=current_user.idusuario  
         )
         db.session.add(nuevo_dispositivo)

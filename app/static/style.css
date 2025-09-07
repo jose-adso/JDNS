@@ -443,3 +443,114 @@ body {
   min-height: 100vh;
   position: relative;
 }
+
+/* Estilos para efecto parallax */
+.parallax {
+  min-height: 400px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.content {
+  background-color: white;
+  padding: 40px 20px;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-dark);
+}
+
+/* Sección de servicios con imagen de fondo */
+.services-section {
+  background-image: url('/static/public/professional-tech-repair-workshop-with-tools-and-e.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 400px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.services-overlay {
+  background: rgba(28, 61, 70, 0.8); /* Color primario con transparencia */
+  color: white;
+  padding: 40px;
+  text-align: center;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+}
+
+/* Sección de marcas con la misma imagen de fondo */
+.brands-section {
+  background-image: url('/static/public/professional-tech-repair-workshop-with-tools-and-e.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 400px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brands-overlay {
+  background: rgba(249, 115, 22, 0.8); /* Color secundario con transparencia */
+  color: white;
+  padding: 40px;
+  text-align: center;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+}
+
+/* Estilos compartidos para overlays */
+.services-overlay h2,
+.brands-overlay h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.services-overlay p,
+.brands-overlay p {
+  font-size: 1.3rem;
+  margin-bottom: 0;
+  opacity: 0.9;
+}
+
+/* Parallax específico para servicios */
+.services-parallax {
+  background-image: url('/static/public/professional-tech-repair-workshop-with-tools-and-e.jpg');
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 576px) {
+  .services-section,
+  .brands-section {
+    background-attachment: scroll;
+  }
+  
+  .services-parallax {
+    background-attachment: scroll;
+  }
+  
+  .services-overlay h2,
+  .brands-overlay h2 {
+    font-size: 2rem;
+  }
+  
+  .services-overlay p,
+  .brands-overlay p {
+    font-size: 1.1rem;
+  }
+  
+  .services-overlay,
+  .brands-overlay {
+    padding: 30px 20px;
+  }
+}

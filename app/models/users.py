@@ -56,7 +56,7 @@ class Dispositivo(db.Model):
     marca = db.Column(db.String(45))
     color = db.Column(db.String(45))
     imei = db.Column(db.String(45))
-    problema = db.Column(db.Text)  
+
     usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
     
 class Reparacion(db.Model):
