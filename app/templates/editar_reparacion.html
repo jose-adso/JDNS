@@ -1,0 +1,55 @@
+{% extends "plantilla.html" %}
+
+{% block title %}Editar Reparación #{{ reparacion.idreparacion }} - JDNS Comunicaciones{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0">
+          <i class="fas fa-edit me-2"></i>
+          Editar Reparación #{{ reparacion.idreparacion }}
+        </h2>
+        <a href="{{ url_for('reparacion.ver_reparacion', reparacion_id=reparacion.idreparacion) }}" class="btn btn-secondary">
+          <i class="fas fa-arrow-left me-1"></i> Volver
+        </a>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label">Estado</label>
+              <select class="form-select" name="estado" required>
+                <option value="pendiente" {% if reparacion.estado=='pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="en_proceso" {% if reparacion.estado=='en_proceso' %}selected{% endif %}>En Proceso</option>
+                <option value="completada" {% if reparacion.estado=='completada' %}selected{% endif %}>Completada</option>
+                <option value="cancelada" {% if reparacion.estado=='cancelada' %}selected{% endif %}>Cancelada</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Costo</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" name="costo" value="{{ reparacion.costo or '' }}" min="0">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción del Problema</label>
+              <textarea class="form-control" name="problema_reparacion" rows="4" required>{{ reparacion.problema_reparacion }}</textarea>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i> Guardar
+              </button>
+              <a href="{{ url_for('reparacion.ver_reparacion', reparacion_id=reparacion.idreparacion) }}" class="btn btn-outline-secondary">
+                Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

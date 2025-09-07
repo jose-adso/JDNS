@@ -70,6 +70,8 @@ class Reparacion(db.Model):
     telefono_idtelefono = db.Column(db.Integer)
     usuario_idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
     dispositivo_iddispositivo = db.Column(db.Integer, db.ForeignKey('dispositivo.iddispositivo'))  
+    usuario = db.relationship('Users', backref='reparaciones')
+    dispositivo = db.relationship('Dispositivo', backref='reparaciones')
     
     
 class HistorialReparacion(db.Model):
