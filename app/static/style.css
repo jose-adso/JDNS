@@ -554,3 +554,100 @@ body {
     padding: 30px 20px;
   }
 }
+/* --- General --- */
+body {
+    padding-top: 70px; /* espacio por el navbar fijo */
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Navbar --- */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+.text-primary-custom {
+    color: #0d6efd !important;
+}
+
+/* --- Botones --- */
+.btn-primary, .btn-success, .btn-danger {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+.btn-success:hover {
+    background-color: #157347;
+}
+.btn-danger:hover {
+    background-color: #bb2d3b;
+}
+
+/* --- Cards --- */
+.card {
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+.card-header {
+    font-weight: 600;
+}
+
+/* --- Tablas --- */
+.table th {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+.table td {
+    vertical-align: middle;
+}
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* --- Offcanvas admin --- */
+.offcanvas-title {
+    font-weight: bold;
+}
+.list-group-item a {
+    text-decoration: none;
+    color: #212529;
+    display: block;
+}
+.list-group-item a:hover {
+    color: #0d6efd;
+    font-weight: 500;
+}
+
+/* --- Carrito --- */
+.carrito-item {
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 6px;
+}
+#carrito-items strong {
+    color: #0d6efd;
+}
+#total-amount {
+    font-size: 1.1rem;
+    color: #198754;
+}
+
+/* --- Footer --- */
+footer {
+    background-color: #212529;
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+footer a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}

@@ -19,7 +19,6 @@ def pago_nuevo():
 
 
 @pago.route('/pago/nuevo', methods=['POST'])
-@pago.route('/pago/nuevo', methods=['POST'])
 @login_required
 def nuevo_pago():
     try:
@@ -139,15 +138,13 @@ def nuevo_pago():
         flash(f"Error al procesar el pago: {str(e)}", "danger")
         return redirect(url_for("pago.pago_nuevo"))
     
-@pago.route('/pagos/listar')
+@pago.route('/admin/pedidos')
 @login_required
-def listar_pagos():
-    
-    if current_user.rol == 'admin':
-        pagos = Pago.query.order_by(Pago.fecha_pago.desc()).all()
-    else:
-        pagos = Pago.query.join(VentaFactura).filter(VentaFactura.usuario_idusuario == current_user.idusuario).order_by(Pago.fecha_pago.desc()).all()
-    return render_template('listar_pagos.html', pagos=pagos)
+def listar_pedidos():
+    from app.models.users import VentaFactura
+    pedidos = VentaFactura.query.filter_by(tipo_venta="online").all()
+    return render_template("admin_compras_onlin.html", pedidos=pedidos)
+
 
 @pago.route('/pagos/factura/<int:factura_id>')
 @login_required
@@ -155,7 +152,7 @@ def descargar_factura(factura_id):
     factura = VentaFactura.query.get_or_404(factura_id)
     if current_user.rol != 'admin' and factura.usuario_idusuario != current_user.idusuario:
         flash("No tienes permiso para ver esta factura", "danger")
-        return redirect(url_for('pago.listar_pagos'))
+        return redirect(url_for('pago.listar_pedidos'))
 
     detalles = DetalleVenta.query.filter_by(ventas_factura_idventas_factura=factura_id).all()
     usuario = factura.usuario  # Asegúrate de tener relación a usuario desde VentaFactura
@@ -215,5 +212,31 @@ def descargar_factura(factura_id):
         download_name=f"factura_{factura.idventas_factura}.pdf",
         mimetype="application/pdf"
     )
+
+
+@pago.route('/admin/pedidos/<int:id_factura>/estado', methods=['POST'])
+@login_required
+def cambiar_estado_pedido(id_factura):
+    from app.models.users import VentaFactura
+    nuevo_estado = request.form.get("estado")  # pendiente, pagado o anulado
+
+    factura = VentaFactura.query.get_or_404(id_factura)
+
+    if nuevo_estado not in ["pendiente", "pagado", "anulado"]:
+        flash("Estado inválido", "danger")
+        return redirect(url_for("pago.listar_pedidos"))
+
+    factura.estado_envio = nuevo_estado
+    # Crear notificación automática al usuario
+    try:
+        from app.models.users import Notificacion
+        mensaje = f"El estado de su pedido #{factura.idventas_factura} ha cambiado a {nuevo_estado}."
+        noti = Notificacion(usuario_idusuario=factura.usuario_idusuario, tipo='pedido', mensaje=mensaje, leida=False, fecha_envio=datetime.now())
+        db.session.add(noti)
+    except Exception:
+        pass
+    db.session.commit()
+    flash(f"Pedido #{factura.idventas_factura} actualizado a {nuevo_estado}", "success")
+    return redirect(url_for("pago.listar_pedidos"))
 
 

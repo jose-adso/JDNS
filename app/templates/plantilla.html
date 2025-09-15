@@ -10,6 +10,62 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     {% block extra_head %}
+    <style>
+        body {
+            padding-top: 80px;
+            background-color: #e3f2fd;
+        }
+        footer {
+            background-color: #cce7ff;
+        }
+        .card-img-top {
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 0; /* Elimina el óvalo de las imágenes */
+        }
+        .card {
+            border-radius: 0; /* Elimina el óvalo del contenedor de la card */
+            min-height: 300px; /* Altura mínima para consistencia */
+            display: flex; /* Usa flexbox para controlar las alturas */
+            flex-direction: column;
+        }
+        .card-image-section {
+            height: 50%; /* Altura de la imagen al 50% de la card */
+            width: 100%; /* Ancho completo de la card */
+            border-bottom: 1px solid #dee2e6; /* Línea de separación */
+            padding-bottom: 10px; /* Espacio debajo de la imagen */
+            display: flex; /* Usa flexbox para centrar */
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+            overflow: hidden; /* Evita que las imágenes se salgan */
+        }
+        .card-image-section .card-img-top {
+            height: 100%; /* Imagen ocupa el 100% del contenedor de 50% */
+            width: 100%; /* Imagen ocupa el 100% del ancho */
+            max-height: 100%; /* Limita la altura máxima */
+            object-fit: cover; /* Ajusta la imagen completamente en el 50% de altura y 100% de ancho */
+        }
+        .card-body {
+            height: 40%; /* Altura del cuerpo al 40% de la card */
+            padding-top: 15px; /* Espacio arriba del texto para separación */
+            text-align: center; /* Centra el contenido del cuerpo */
+            overflow: auto; /* Permite desplazamiento si el contenido excede */
+        }
+        .card-title {
+            font-weight: bold; /* Títulos en negrita */
+            font-size: 1.25rem; /* Tamaño de fuente más grande para el título */
+        }
+        .card-text {
+            margin-bottom: 10px; /* Espaciado entre líneas de texto */
+        }
+        .btn {
+            margin: 5px; /* Espaciado entre botones */
+        }
+        .container.mb-5 h2 {
+            text-align: center; /* Centra el título */
+            margin-bottom: 20px; /* Espacio debajo del título */
+        }
+    </style>
     {% endblock %}
     <style>
         body {
@@ -29,6 +85,83 @@
    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
         <a class="navbar-brand text-primary-custom" href="{{ url_for('auth.dashboard') }}">
+    <script>
+    // Notificaciones: polling cada 10s, render en dropdown, marcar como leída y reproducir beep con WebAudio
+    document.addEventListener('DOMContentLoaded', function(){
+        const API = "{{ url_for('notificaciones.notificaciones_api') }}";
+        const LEER = (id) => `{{ url_for('notificaciones.marcar_leida', id=0) }}`.replace('/0', `/${id}`);
+        const listEl = document.getElementById('client-noti-list');
+        const badgeEl = document.getElementById('client-noti-badge');
+        let lastUnread = 0;
+
+        // WebAudio beep synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(){
+            try{
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.type = 'sine';
+                o.frequency.value = 880;
+                g.gain.value = 0.08;
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start();
+                setTimeout(()=>{ o.stop(); }, 120);
+            }catch(e){ console.warn('Audio not available', e); }
+        }
+
+        async function fetchNotis(){
+            try{
+                const r = await fetch(API, { credentials: 'same-origin' });
+                if(!r.ok) throw new Error('Network');
+                const data = await r.json();
+                const notis = Array.isArray(data) ? data : (data.notifications || []);
+                const unread = notis.filter(n=>!n.leido).length;
+
+                // Update badge
+                if(unread>0){ badgeEl.style.display='inline-block'; badgeEl.textContent = unread; }
+                else { badgeEl.style.display='none'; }
+
+                // Play sound if new unread arrived
+                if(unread>lastUnread && lastUnread!==0){ playBeep(); }
+                lastUnread = unread;
+
+                // Render list (max 6)
+                listEl.innerHTML = '';
+                if(notis.length===0){
+                    listEl.innerHTML = '<div class="dropdown-item-text text-muted small">No hay notificaciones</div>';
+                    return;
+                }
+                notis.slice(0,6).forEach(n=>{
+                    const li = document.createElement('div');
+                    li.className = 'dropdown-item d-flex justify-content-between align-items-start';
+                    li.style.cursor = 'pointer';
+                    li.innerHTML = `<div class="me-2"><strong style="font-size:0.95rem">${n.tipo || 'Notificación'}</strong><div class="small text-muted">${n.mensaje || ''}</div><div class="small text-muted">${n.fecha_envio || ''}</div></div>`;
+                    if(!n.leido){
+                        const dot = document.createElement('span');
+                        dot.className = 'badge bg-primary rounded-pill ms-2';
+                        dot.textContent = 'Nuevo';
+                        li.querySelector('div').appendChild(dot);
+                    }
+                    li.addEventListener('click', async (e)=>{
+                        // marcar como leida
+                        try{
+                            await fetch(LEER(n.id), { method: 'POST', credentials: 'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'} });
+                        }catch(err){ console.warn('No se pudo marcar leída', err); }
+                        // opcional: redirigir si hay url
+                        if(n.url) window.location.href = n.url;
+                        fetchNotis();
+                    });
+                    listEl.appendChild(li);
+                    const hr = document.createElement('div'); hr.innerHTML='<hr class="dropdown-divider">'; listEl.appendChild(hr);
+                });
+            }catch(err){ console.warn('Error cargando notis', err); }
+        }
+
+        // Inicial y cada 10s
+        fetchNotis();
+        setInterval(fetchNotis, 10000);
+    });
+    </script>
             <i class="bi bi-phone me-2"></i>JDNS COMUNICACIONES
         </a>
         
@@ -51,6 +184,20 @@
             
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
+                <!-- Notificaciones (dropdown) -->
+                <div class="nav-item dropdown me-2">
+                    <a class="nav-link dropdown-toggle position-relative text-white" href="#" id="clientNotiDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell" style="font-size:1.1rem"></i>
+                        <span id="client-noti-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;display:none;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="clientNotiDropdown" style="min-width:320px;">
+                        <li class="dropdown-header">Notificaciones</li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li id="client-noti-list"><div class="dropdown-item-text text-muted small">Cargando...</div></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="{{ url_for('notificaciones.notificaciones') }}">Ver todas</a></li>
+                    </ul>
+                </div>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
                     <i class="bi bi-box-arrow-right"></i> Cerrar sesión
                 </a>
@@ -58,6 +205,8 @@
         </div>
     </div>
 </nav>
+
+<!-- Sonido notificación se sintetiza con WebAudio (no requiere archivo) -->
     
     {% block content %}
         {% if use_carousel %}
@@ -66,15 +215,17 @@
                     {% for producto in productos %}
                         <div class="carousel-item {% if loop.first %}active{% endif %}">
                             <div class="card" style="width: 18rem;">
-                                {% if producto.imagen %}
-                                    <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
-                                {% else %}
-                                    <img src="{{ url_for('static', filename='images/productos/default.jpg') }}" class="card-img-top" alt="Imagen no disponible">
-                                {% endif %}
+                                <div class="card-image-section">
+                                    {% if producto.imagen %}
+                                        <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='images/productos/default.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                    {% endif %}
+                                </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ producto.nombre }}</h5>
                                     <p class="card-text">{{ producto.descripcion }}</p>
-                                    <p class="card-text">Precio: ${{ producto.precio_unitario }}</p>
+                                    <p class="card-text">Precio: <span class="fw-bold text-success">${{ producto.precio_unitario }}</span></p>
                                     <a href="{{ url_for('producto.editar', id=producto.idproducto) if current_user.rol == 'admin' else '#' }}" class="btn btn-primary">Ver más</a>
                                 </div>
                             </div>
@@ -93,22 +244,24 @@
         {% endif %}
 
         {% if not use_carousel and not carrito_view %}
-            <div class="container mb-5">
+            <div class="container mb-5" style="min-height: 400px;">
                 <h2>Nuestros Productos</h2>
                 <div class="row">
                     {% if productos %}
                         {% for producto in productos %}
                             <div class="col-md-4 mb-4">
                                 <div class="card">
-                                    {% if producto.imagen %}
-                                        <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
-                                    {% else %}
-                                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
-                                    {% endif %}
+                                    <div class="card-image-section">
+                                        {% if producto.imagen %}
+                                            <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                        {% endif %}
+                                    </div>
                                     <div class="card-body">
                                         <h5 class="card-title">{{ producto.nombre }}</h5>
-                                        <p class="fw-bold text-success fs-5"> ${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</p>
                                         <p class="card-text">{{ producto.descripcion }}</p>
+                                        <p class="card-text">Precio: <span class="fw-bold text-success">${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</span></p>
                                         {% if producto.stock is defined and producto.stock > 0 %}
                                             <p class="card-text">Stock: {{ producto.stock }}</p>
                                         {% else %}
@@ -147,19 +300,21 @@
                                 {% set producto = productos[item.producto_idproducto] %}
                                 <div class="col-md-4 mb-4">
                                     <div class="card">
-                                        {% if producto.imagen %}
-                                            <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
-                                        {% else %}
-                                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
-                                        {% endif %}
+                                        <div class="card-image-section">
+                                            {% if producto.imagen %}
+                                                <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+                                            {% else %}
+                                                <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Imagen no disponible">
+                                            {% endif %}
+                                        </div>
                                         <div class="card-body">
                                             <h5 class="card-title">{{ producto.nombre }}</h5>
-                                            <p class="card-text">Precio: ${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</p>
+                                            <p class="card-text">Precio: <span class="fw-bold text-success">${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</span></p>
                                             <p class="card-text">Cantidad: {{ item.cantidad }}</p>
-                                            <p class="card-text">Subtotal: ${{ (producto.precio_unitario|default(0)|float * item.cantidad)|round(0, 'floor')|string }}</p>
+                                            <p class="card-text">Subtotal: <span class="fw-bold text-success">${{ (producto.precio_unitario|default(0)|float * item.cantidad)|round(0, 'floor')|string }}</span></p>
                                             <form action="{{ url_for('carrito.reducir_cantidad', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
-                                        <button type="submit" class="btn btn-warning btn-sm">⬇ Disminuir</button>
-                                    </form>
+                                                <button type="submit" class="btn btn-warning btn-sm">⬇ Disminuir</button>
+                                            </form>
                                             <form action="{{ url_for('carrito.eliminar_del_carrito', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
                                                 <button type="submit" class="btn btn-danger btn-sm">❌ Eliminar</button>
                                             </form>
@@ -172,9 +327,8 @@
                         {% endfor %}
                     </div>
                     <div class="text-center mt-4">
-                        <h4>Total: ${{ total|default(0)|float|round(0, 'floor')|string }}</h4>
-                        <a href="{{ url_for('pago.nuevo_pago') }}" class="btn btn-primary">💳 Realizar Pago</a>
-
+                        <h4>Total: <span class="fw-bold text-success">${{ total|default(0)|float|round(0, 'floor')|string }}</span></h4>
+                        <a href="{{ url_for('pago.pago_nuevo') }}" class="btn btn-primary">💳 Realizar Pago</a>
                     </div>
                 {% else %}
                     <p class="text-center">El carrito está vacío.</p>
@@ -190,5 +344,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>

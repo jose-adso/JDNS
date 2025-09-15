@@ -42,7 +42,10 @@ def dashboard():
     elif current_user.rol == 'tecnico':
         return render_template('tecnico.html', fichas_asignadas=4, programas_total=2, mensajes_nuevos=1)
     elif current_user.rol == 'admin':
-        return render_template('admin.html', total_usuarios=50, total_bd=3, accesos_ultimos=12)
+        # pasar lista de productos para que el panel de ventas físicas pueda listarlos
+        from app.models.users import Producto
+        productos = Producto.query.all()
+        return render_template('admin.html', total_usuarios=50, total_bd=3, accesos_ultimos=12, productos=productos)
     else:
         return "No tienes permiso para ver este panel", 403
 
@@ -129,3 +132,13 @@ def register_admin():
         return redirect(url_for('auth.dashboard'))
     
     return render_template("register_admin.html")
+
+
+
+
+
+@bp.route('/usuarios')
+@login_required
+def listar_usuarios():
+    usuarios = Users.query.all()
+    return render_template('usuarios.html', usuarios=usuarios)

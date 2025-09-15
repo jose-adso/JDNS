@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, abort
 from app import db
 from app.models.users import HistorialReparacion, Reparacion
 from datetime import datetime
+from flask_login import login_required, current_user
 
 bp = Blueprint('historial', __name__)
 
@@ -28,3 +29,13 @@ def nuevo_historial(reparacion_id):
         db.session.commit()
         return redirect(url_for('historial.listar_historial', reparacion_id=reparacion_id))
     return render_template('historial_nuevo.html', reparacion=reparacion)
+
+
+@bp.route('/admin')
+@login_required
+def listar_todos():
+    # Sólo admins
+    if getattr(current_user, 'rol', None) != 'admin':
+        abort(403)
+    todos = HistorialReparacion.query.order_by(HistorialReparacion.fecha_cambio.desc()).all()
+    return render_template('historial_admin_list.html', historial=todos)

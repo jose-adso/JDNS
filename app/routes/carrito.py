@@ -38,6 +38,39 @@ def agregar_al_carrito(producto_id):
             flash('No hay stock disponible.', 'error')
     return redirect(url_for('producto.listar_productos'))
 
+@carrito.route('/carrito/aumentar_cantidad/<int:carrito_id>', methods=['POST'])
+def aumentar_cantidad(carrito_id):
+    if current_user.is_authenticated:
+        carrito_item = Carrito.query.get_or_404(carrito_id)
+        if carrito_item.usuario_idusuario == current_user.idusuario:
+            producto = Producto.query.get(carrito_item.producto_idproducto)
+            if producto.stock > 0:
+                carrito_item.cantidad += 1
+                producto.stock -= 1
+                db.session.commit()
+                flash('Cantidad aumentada en el carrito!', 'success')
+            else:
+                flash('No hay stock disponible.', 'error')
+    return redirect(url_for('carrito.ver_carrito'))
+
+@carrito.route('/carrito/reducir_cantidad/<int:carrito_id>', methods=['POST'])
+def reducir_cantidad(carrito_id):
+    if current_user.is_authenticated:
+        carrito_item = Carrito.query.get_or_404(carrito_id)
+        if carrito_item.usuario_idusuario == current_user.idusuario:
+            producto = Producto.query.get(carrito_item.producto_idproducto)
+            if carrito_item.cantidad > 1:
+                carrito_item.cantidad -= 1
+                producto.stock += 1
+                db.session.commit()
+                flash('Cantidad reducida en el carrito!', 'success')
+            else:
+                producto.stock += 1
+                db.session.delete(carrito_item)
+                db.session.commit()
+                flash('Última unidad eliminada del carrito!', 'success')
+    return redirect(url_for('carrito.ver_carrito'))
+
 @carrito.route('/carrito/eliminar/<int:carrito_id>', methods=['POST'])
 def eliminar_del_carrito(carrito_id):
     if current_user.is_authenticated:
@@ -50,39 +83,20 @@ def eliminar_del_carrito(carrito_id):
             flash('Producto eliminado del carrito!', 'success')
     return redirect(url_for('carrito.ver_carrito'))
 
-@carrito.route('/carrito/reducir/<int:carrito_id>', methods=['POST'])
-def reducir_cantidad(carrito_id):
-    if current_user.is_authenticated:
-        carrito_item = Carrito.query.get_or_404(carrito_id)
-        if carrito_item.usuario_idusuario == current_user.idusuario:
-            if carrito_item.cantidad > 1:
-                carrito_item.cantidad -= 1
-                producto = Producto.query.get(carrito_item.producto_idproducto)
-                producto.stock += 1
-                db.session.commit()
-                flash('Cantidad reducida en el carrito!', 'success')
-            else:
-                producto = Producto.query.get(carrito_item.producto_idproducto)
-                producto.stock += 1
-                db.session.delete(carrito_item)
-                db.session.commit()
-                flash('Última unidad eliminada del carrito!', 'success')
-    return redirect(url_for('carrito.ver_carrito'))
-
 @carrito.route('/carrito/pagar', methods=['POST'])
 def realizar_pago():
     if current_user.is_authenticated:
         carritos = Carrito.query.filter_by(usuario_idusuario=current_user.idusuario).all()
         if carritos:
             total = sum(item.cantidad * Producto.query.get(item.producto_idproducto).precio_unitario for item in carritos)
-            nueva_factura = VentaFactura(usuario_idusuario=current_user.idusuario, total=str(total))
+            nueva_factura = VentaFactura(usuario_idusuario=current_user.idusuario, total=total)
             db.session.add(nueva_factura)
-            db.session.flush() 
+            db.session.flush()
             for item in carritos:
                 nuevo_pago = Pago(
-                    fecha_pago='CURRENT_TIMESTAMP',
+                    fecha_pago=datetime.utcnow(),
                     monto=Producto.query.get(item.producto_idproducto).precio_unitario * item.cantidad,
-                    metodo_pago='efectivo', 
+                    metodo_pago='efectivo',
                     estado_pago='pendiente',
                     proveedor_pago='Proveedor Genérico',
                     token_transaccion='TOKEN_' + str(nueva_factura.idventas_factura),

@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+<!DOCTYPE html>
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Mi Tienda{% endblock %}</title>
@@ -8,23 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    {% block extra_head %}
-    {% endblock %}
-    <style>
-        body {
-            padding-top: 80px;
-            background-color: #e3f2fd;
-        }
-        footer {
-            background-color: #cce7ff;
-        }
-        .card-img-top {
-            max-height: 200px;
-            object-fit: cover;
-        }
-    </style>
+    {% block extra_head %}{% endblock %}
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
@@ -36,25 +25,31 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.dashboard') }}"><span class="me-1">🏠</span>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('producto.listar_productos') }}"><span class="me-1">📦</span>Productos</a>
-                    </li>
-                    
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.dashboard') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('producto.listar_productos') }}">Productos</a></li>
                 </ul>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
-                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                    </a>
+                    <!-- Notificaciones -->
+                    <div class="nav-item dropdown me-2">
+                        <a class="nav-link position-relative text-white" href="#" id="notiDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell" style="font-size:1.1rem"></i>
+                            <span id="noti-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;display:none;">0</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="notiDropdown" style="min-width:280px;">
+                            <li><strong class="dropdown-item-text">Notificaciones</strong></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li id="noti-list"><div class="dropdown-item-text text-muted small">Cargando...</div></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-center" href="{{ url_for('notificaciones.notificaciones') }}">Ver todas</a></li>
+                        </ul>
+                    </div>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger ms-2">Cerrar sesión</a>
                 </form>
             </div>
         </div>
     </nav>
 
-    
     <div class="container mt-3 mb-4">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
             <i class="bi bi-list"></i> Opciones administración
@@ -69,55 +64,344 @@
                     <li class="list-group-item"><a href="{{ url_for('empresa.listar') }}">Empresas</a></li>
                     <li class="list-group-item"><a href="{{ url_for('producto.listar') }}">Productos</a></li>
                     <li class="list-group-item"><a href="{{ url_for('auth.register_admin') }}">Usuarios</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('pago.listar_pagos') }}">Pago</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('dispositivo.nuevo_dispositivo') }}">dispositivos</a></li>
-                   <li class="list-group-item"><a href="{{ url_for('reparacion.listar_reparaciones') }}">Reparación</a></li>
-                    
+                    <li class="list-group-item"><a href="{{ url_for('pago.listar_pedidos') }}">Pago</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('dispositivo.nuevo_dispositivo') }}">Dispositivos</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('reparacion.listar_reparaciones') }}">Reparación</a></li>
                 </ul>
             </div>
         </div>
     </div>
-    
 
     {% block content %}
-    
     <div class="container">
-        <h2 class="mb-4">Panel administrativo principal</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card text-center mb-4">
+        <h2 class="mb-4">Panel Administrativo Principal</h2>
+
+        <!-- Acciones rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Total de Usuarios</h5>
-                        <p class="card-text display-6">{{ total_usuarios | default('N/A') }}</p>
+                        <h6>Facturas / Ventas</h6>
+                        <p class="small text-muted">Ver y gestionar facturas</p>
+                        <a href="{{ url_for('ventas_factura.listar_ventas') }}" class="btn btn-sm btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-center mb-4">
+            
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Registros en BD</h5>
-                        <p class="card-text display-6">{{ total_bd | default('N/A') }}</p>
+                        <h6>Productos</h6>
+                        <p class="small text-muted">Lista de productos</p>
+                        <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-sm btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-center mb-4">
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Últimos Accesos</h5>
-                        <p class="card-text display-6">{{ accesos_ultimos | default('N/A') }}</p>
+                        <h6>Usuarios</h6>
+                        <p class="small text-muted">Gestionar administradores</p>
+                        <a href="{{ url_for('auth.register_admin') }}" class="btn btn-sm btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <div class="row mb-4">
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6>Pagos</h6>
+                        <p class="small text-muted">Revisar pagos</p>
+                        <a href="{{ url_for('pago.listar_pedidos') }}" class="btn btn-sm btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6>Reparaciones</h6>
+                        <p class="small text-muted">Lista de reparaciones</p>
+                        <a href="{{ url_for('reparacion.listar_reparaciones') }}" class="btn btn-sm btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary mb-4" onclick="toggleVentaFisica()"><i class="bi bi-cart-plus"></i> Nueva Venta</button>
+
+        <div id="ventaFisicaForm" style="display:none;">
+            <div class="row">
+                <div class="col-lg-7 mb-4">
+                    <div class="card">
+                        <div class="card-header">Seleccionar Productos</div>
+                        <div class="card-body">
+                            <input id="buscarProducto" class="form-control mb-3" placeholder="Buscar producto...">
+                            <div class="row" id="productosDisponibles">
+                                {% for p in productos %}
+                                <div class="col-6 mb-3">
+                                    <div class="card producto-item h-100" data-id="{{ p.idproducto }}" data-nombre="{{ p.nombre|e }}" data-precio="{{ p.precio_unitario }}" data-stock="{{ p.stock }}">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title">{{ p.nombre }}</h6>
+                                            <p class="text-muted small mb-1">Stock: {{ p.stock }}</p>
+                                            <strong class="text-success">${{ p.precio_unitario }}</strong>
+                                            <div class="mt-2"><button class="agregar-producto btn btn-sm btn-primary">Agregar</button></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-header"><h5>Carrito de Venta</h5></div>
+                        <div class="card-body">
+                            <div id="carrito-items"><p class="text-muted">No hay productos seleccionados</p></div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6"><strong>Subtotal:</strong></div>
+                                <div class="col-6 text-end"><span id="subtotal-amount">$0.00</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6"><strong>IVA (19%):</strong></div>
+                                <div class="col-6 text-end"><span id="iva-amount">$0.00</span></div>
+                            </div>
+                            <div class="row border-top pt-2 mt-2">
+                                <div class="col-6"><strong>Total:</strong></div>
+                                <div class="col-6 text-end"><strong id="total-amount">$0.00</strong></div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="form-label">Nombre cliente (opcional)</label>
+                                <input id="cliente-nombre" class="form-control mb-2" placeholder="Nombre del cliente"> 
+                                <label class="form-label">Identificación (opcional)</label>
+                                <input id="cliente-identificacion" class="form-control mb-2" placeholder="Cédula / NIT"> 
+                                <label class="form-label">Método de Pago</label>
+                                <select id="metodo-pago" class="form-select">
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="tarjeta">Tarjeta</option>
+                                    <option value="transferencia">Transferencia</option>
+                                    <option value="mixto">Mixto</option>
+                                </select>
+                            </div>
+                            <button id="procesar-venta" class="btn btn-success w-100 mt-3">Procesar Venta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% endblock %}
 
     <footer class="text-center py-4 mt-auto">
-        <div class="container">
-            <span class="text-muted">© 2025 Mi Empresa. Todos los derechos reservados.</span>
-        </div>
+        <div class="container"><span class="text-muted">© 2025 Mi Empresa. Todos los derechos reservados.</span></div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // Carga de notificaciones en el dropdown (usa API JSON) y marca como leídas al abrir
+    (function(){
+        const notiDropdown = document.getElementById('notiDropdown');
+        const notiList = document.getElementById('noti-list');
+        const notiBadge = document.getElementById('noti-badge');
+
+        async function fetchNotis(){
+            const resp = await fetch("{{ url_for('notificaciones.notificaciones_api') }}", { credentials: 'same-origin' });
+            if (!resp.ok) throw new Error('No se pudo obtener JSON');
+            return await resp.json();
+        }
+
+        function renderNotis(notis){
+            notiList.innerHTML = '';
+            if (!notis || notis.length === 0){
+                notiList.innerHTML = '<div class="dropdown-item-text text-muted small">No hay notificaciones</div>';
+                notiBadge.style.display = 'none';
+                return;
+            }
+            let unread = 0;
+            notis.slice(0,8).forEach(n => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item d-flex justify-content-between align-items-start';
+                const left = document.createElement('div');
+                left.innerHTML = `<div class="fw-bold small mb-1">${n.tipo || 'Notificación'}</div><div class="small text-muted">${n.mensaje || ''}</div><div class="small text-muted">${n.fecha_envio || ''}</div>`;
+                const right = document.createElement('div');
+                if (!n.leida){
+                    const b = document.createElement('span'); b.className = 'badge bg-danger'; b.textContent = 'Nuevo';
+                    right.appendChild(b);
+                    unread++;
+                } else {
+                    const b = document.createElement('span'); b.className = 'badge bg-secondary'; b.textContent = 'Leída';
+                    right.appendChild(b);
+                }
+                item.appendChild(left);
+                item.appendChild(right);
+                notiList.appendChild(item);
+                const hr = document.createElement('div'); hr.innerHTML = '<hr class="dropdown-divider">'; notiList.appendChild(hr);
+            });
+            notiBadge.textContent = unread;
+            notiBadge.style.display = unread ? 'inline-block' : 'none';
+        }
+
+        async function loadNotificaciones(){
+            try{
+                const notis = await fetchNotis();
+                renderNotis(notis);
+
+                // Marcar como leídas las no leídas (async, en background)
+                for(const n of notis){
+                    if (!n.leida){
+                        try{
+                            await fetch(`{{ url_for('notificaciones.marcar_leida', id=0) }}`.replace('/0', `/${n.id}`), { method: 'POST', credentials: 'same-origin' });
+                        }catch(e){ /* ignorar errores individuales */ }
+                    }
+                }
+                // actualizar badge tras marcar
+                notiBadge.style.display = 'none';
+            }catch(e){
+                notiList.innerHTML = '<div class="dropdown-item-text text-danger small">Error cargando notificaciones</div>';
+                notiBadge.style.display = 'none';
+            }
+        }
+
+        if (notiDropdown) {
+            notiDropdown.addEventListener('click', loadNotificaciones);
+            // carga inicial en background
+            loadNotificaciones();
+            // refresco cada 20s
+            setInterval(async ()=>{
+                try{ const notis = await fetchNotis(); renderNotis(notis); }catch(e){}
+            }, 20000);
+        }
+    })();
+    // JS para seleccionar productos y manejar carrito en el panel admin
+    document.addEventListener('DOMContentLoaded', function () {
+        const buscarInput = document.getElementById('buscarProducto');
+        if (buscarInput) {
+            buscarInput.addEventListener('input', () => {
+                const term = buscarInput.value.toLowerCase();
+                document.querySelectorAll('.producto-item').forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    card.parentElement.style.display = title.includes(term) ? 'block' : 'none';
+                });
+            });
+        }
+
+        let carrito = [];
+
+        function actualizarCarritoDOM() {
+            const carritoDiv = document.getElementById('carrito-items');
+            carritoDiv.innerHTML = '';
+            let subtotal = 0;
+            carrito.forEach((item, index) => {
+                const itemSubtotal = item.precio * item.cantidad;
+                subtotal += itemSubtotal;
+                const el = document.createElement('div');
+                el.className = 'carrito-item d-flex justify-content-between align-items-center mb-2';
+                el.innerHTML = `
+                    <div><strong>${item.nombre}</strong><br><small>$${item.precio.toFixed(2)} x ${item.cantidad} = $${itemSubtotal.toFixed(2)}</small></div>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, -1)">-</button>
+                        <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, 1)">+</button>
+                        <button class="btn btn-outline-danger" onclick="window.__eliminarItem(${index})">×</button>
+                    </div>`;
+                carritoDiv.appendChild(el);
+            });
+            if (!carrito.length) carritoDiv.innerHTML = '<p class="text-muted">No hay productos seleccionados</p>';
+            const iva = subtotal * 0.19;
+            const total = subtotal + iva;
+            document.getElementById('subtotal-amount').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('iva-amount').textContent = `$${iva.toFixed(2)}`;
+            document.getElementById('total-amount').textContent = `$${total.toFixed(2)}`;
+        }
+
+        window.__cambiarCantidad = function(index, cambio) {
+            const item = carrito[index];
+            if (!item) return;
+            const nueva = item.cantidad + cambio;
+            if (nueva <= 0) carrito.splice(index, 1);
+            else if (nueva <= item.stock) item.cantidad = nueva;
+            actualizarCarritoDOM();
+        };
+
+        window.__eliminarItem = function(index) {
+            carrito.splice(index, 1);
+            actualizarCarritoDOM();
+        };
+
+        // Manejo de botones "Agregar"
+        document.querySelectorAll('.agregar-producto').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const card = this.closest('.producto-item');
+                const producto = {
+                    id: card.dataset.id,
+                    nombre: card.dataset.nombre,
+                    precio: parseFloat(card.dataset.precio) || 0,
+                    stock: parseInt(card.dataset.stock) || 0,
+                    cantidad: 1
+                };
+                const existente = carrito.find(x => x.id === producto.id);
+                if (existente) {
+                    if (existente.cantidad < producto.stock) existente.cantidad += 1;
+                    else return alert('Sin stock');
+                } else carrito.push(producto);
+                actualizarCarritoDOM();
+            });
+        });
+
+        // Toggle form
+        window.toggleVentaFisica = function() {
+            const f = document.getElementById('ventaFisicaForm');
+            if (!f) return;
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        };
+
+        // Procesar venta: enviamos al backend para crear la factura
+        const procesarBtn = document.getElementById('procesar-venta');
+        if (procesarBtn) {
+            procesarBtn.addEventListener('click', async () => {
+                if (!carrito.length) return alert('No hay productos en el carrito');
+                const metodo = document.getElementById('metodo-pago').value;
+                const clienteNombre = document.getElementById('cliente-nombre').value || null;
+                const clienteIdentificacion = document.getElementById('cliente-identificacion').value || null;
+
+                // Construir payload
+                const subtotal = carrito.reduce((s,it) => s + it.precio * it.cantidad, 0);
+                const iva = subtotal * 0.19;
+                const total = parseFloat((subtotal + iva).toFixed(2));
+
+                try {
+                    const resp = await fetch("{{ url_for('ventas_factura.venta_fisica') }}", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            productos: carrito.map(i => ({ id: parseInt(i.id), cantidad: i.cantidad })),
+                            metodo_pago: metodo,
+                            cliente_nombre: clienteNombre,
+                            cliente_identificacion: clienteIdentificacion,
+                            total: total
+                        })
+                    });
+                    const json = await resp.json();
+                    if (!resp.ok) return alert(json.error || 'Error al crear la factura');
+
+                    // Redirigir al detalle de la factura
+                    const id = json.factura_id;
+                    if (id) {
+                        window.location.href = `{{ url_for('ventas_factura.detalle_venta', id=0) }}`.replace('/0', '/' + id);
+                    } else {
+                        alert('Factura creada, pero id no devuelto');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error de comunicación con el servidor');
+                }
+            });
+        }
+    });
+    </script>
+
 </body>
 </html>

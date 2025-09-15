@@ -1,57 +1,48 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
+{% extends "base.html" %}
 
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
+{% block title %}Ventas Factura{% endblock %}
 
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
+{% block extra_head %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .venta-card {
+        transition: transform .2s;
+    }
+    .venta-card:hover {
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}
 
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
-<html>
-<head>
-    <title>Ventas Factura</title>
-</head>
-<body>
-    <h1>Lista de Ventas</h1>
-    <a href="{{ url_for('nueva_venta') }}">Nueva Venta</a>
-    <ul>
-    {% for venta in ventas %}
-        <li>
-            ID: {{ venta.idventas_factura }} - Usuario: {{ venta.usuario.nombre if venta.usuario else 'Sin usuario' }} - Fecha: {{ venta.fecha_venta }} - Total: {{ venta.total }}
-            <a href="{{ url_for('detalle_venta', id=venta.idventas_factura) }}">Detalles</a>
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary"><i class="bi bi-receipt"></i> Lista de Ventas</h2>
+
+    <ul class="list-group">
+        {% for venta in ventas %}
+        <li class="list-group-item mb-2 shadow-sm rounded venta-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">ID: {{ venta.idventas_factura }}</h6>
+                    <p class="mb-0 text-muted">
+                        Usuario: {{ venta.usuario.nombre if venta.usuario else 'Sin usuario' }} <br>
+                        Fecha: {{ venta.fecha_venta }} <br>
+                        <strong class="text-success">Total: ${{ venta.total }}</strong>
+                    </p>
+                </div>
+                <a href="{{ url_for('ventas_factura.detalle_venta', id=venta.idventas_factura) }}" 
+                   class="btn btn-sm btn-primary">
+                   <i class="bi bi-eye"></i> Detalles
+                </a>
+            </div>
         </li>
-    {% endfor %}
+        {% else %}
+        <li class="list-group-item text-center text-muted">
+            No hay ventas registradas
+        </li>
+        {% endfor %}
     </ul>
-</body>
-</html>
+</div>
+{% endblock %}

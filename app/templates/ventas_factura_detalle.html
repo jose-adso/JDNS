@@ -1,0 +1,55 @@
+{% extends 'plantilla.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Detalle de factura #{{ venta.idventas_factura }}</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Cliente:</strong> {{ venta.usuario.nombre if venta.usuario else 'N/A' }}</li>
+        <li class="list-group-item"><strong>Fecha:</strong> {{ venta.fecha_venta.strftime('%d/%m/%Y %H:%M') if venta.fecha_venta else 'N/A' }}</li>
+        <li class="list-group-item"><strong>Tipo:</strong> {{ venta.tipo_venta or 'N/A' }}</li>
+        <li class="list-group-item"><strong>Estado:</strong> {{ venta.estado_envio or 'N/A' }}</li>
+  <li class="list-group-item"><strong>Total:</strong> ${{ '%.2f' % (venta.total or 0) }}</li>
+      </ul>
+    </div>
+    <div class="col-md-6 text-end">
+      <a href="{{ url_for('pago.descargar_factura', factura_id=venta.idventas_factura) }}" class="btn btn-primary mt-2">Descargar PDF</a>
+    </div>
+  </div>
+
+  <h4>Detalles</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio unit.</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for det in venta.detalle_ventas %}
+      <tr>
+        <td>{{ det.producto.nombre if det.producto else 'Servicio/Item' }}</td>
+        <td>{{ det.cantidad }}</td>
+  <td>${{ '%.2f' % (det.precio_unitario or 0) }}</td>
+  <td>${{ '%.2f' % (det.subtotal or 0) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No hay detalles registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4>Pagos</h4>
+  <ul class="list-group">
+    {% for pago in venta.pagos %}
+  <li class="list-group-item">{{ pago.metodo_pago or 'N/A' }} — ${{ '%.2f' % (pago.monto or 0) }} — {{ pago.estado_pago or '' }} — {{ pago.fecha_pago.strftime('%d/%m/%Y %H:%M') if pago.fecha_pago else '' }}</li>
+    {% else %}
+    <li class="list-group-item">No hay registros de pago.</li>
+    {% endfor %}
+  </ul>
+
+</div>
+{% endblock %}
