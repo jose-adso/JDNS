@@ -46,11 +46,18 @@ def venta_fisica():
         # Resolver cliente: puede venir usuario_idusuario o cliente_nombre
         usuario_id = data.get("usuario_idusuario")
         cliente_nombre = data.get("cliente_nombre")
-        cliente_identificacion = data.get("cliente_identificacion")
+        cliente_correo = data.get("cliente_correo")
+        cliente_telefono = data.get("cliente_telefono")
+        cliente_direccion = data.get("cliente_direccion")
         from app.models.users import Users
         if not usuario_id:
-            # crear un usuario temporal mínimo (si no se envía nombre, usar 'Cliente')
-            nuevo_usuario = Users(nombre=cliente_nombre or 'Cliente', telefono=cliente_identificacion)
+            # crear un usuario temporal completo (si no se envía nombre, usar 'Cliente')
+            nuevo_usuario = Users(
+                nombre=cliente_nombre or 'Cliente',
+                telefono=cliente_telefono,
+                correo=cliente_correo,
+                direccion=cliente_direccion
+            )
             db.session.add(nuevo_usuario)
             db.session.flush()
             usuario_id = nuevo_usuario.idusuario

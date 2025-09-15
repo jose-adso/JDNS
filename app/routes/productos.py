@@ -62,7 +62,7 @@ def crear():
         stock = request.form['stock']
         empresa_idempresa = request.form['empresa_idempresa']
 
-        if tipo not in ['repuesto', 'accesorio']:
+        if tipo not in ['repuesto', 'accesorio', 'telefonos', 'computadores']:
             flash('Tipo de producto no válido.', 'danger')
             return redirect(url_for('producto.crear'))
         
@@ -137,7 +137,7 @@ def editar(id):
         stock = request.form['stock']
         empresa_idempresa = request.form['empresa_idempresa']
 
-        if tipo not in ['repuesto', 'accesorio']:
+        if tipo not in ['repuesto', 'accesorio', 'telefonos', 'computadores']:
             flash('Tipo de producto no válido.', 'danger')
             return redirect(url_for('producto.editar', id=id))
         

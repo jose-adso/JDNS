@@ -93,10 +93,25 @@ def nuevo_pago():
         except Exception:
             elementos.append(Paragraph("<b>[Logo no encontrado]</b>", styles["Normal"]))
 
-        
-        elementos.append(Paragraph("<b>JDNS Comunicaciones</b>", styles["Title"]))
+        # Sección Empresa
+        elementos.append(Spacer(1, 12))
+        elementos.append(Paragraph("<b>EMPRESA:</b>", styles["Heading2"]))
+        elementos.append(Paragraph("Nombre: JDNS Comunicaciones", styles["Normal"]))
         elementos.append(Paragraph("NIT: 1101755776-0", styles["Normal"]))
-        elementos.append(Paragraph(f"Cliente: {current_user.nombre}", styles["Normal"]))
+        elementos.append(Paragraph("Teléfono: +57 300 123 4567", styles["Normal"]))
+        elementos.append(Paragraph("Dirección: Carrera 2 4 30, Vélez, Santander", styles["Normal"]))
+        elementos.append(Paragraph("Correo: info@jdnscomunicaciones.com", styles["Normal"]))
+        elementos.append(Spacer(1, 12))
+
+        # Sección Cliente
+        elementos.append(Paragraph("<b>CLIENTE:</b>", styles["Heading2"]))
+        elementos.append(Paragraph(f"Nombre: {current_user.nombre}", styles["Normal"]))
+        elementos.append(Paragraph(f"Correo: {current_user.correo or 'N/A'}", styles["Normal"]))
+        elementos.append(Paragraph(f"Teléfono: {current_user.telefono or 'N/A'}", styles["Normal"]))
+        elementos.append(Paragraph(f"Dirección: {current_user.direccion or 'N/A'}", styles["Normal"]))
+        elementos.append(Spacer(1, 12))
+
+        
         elementos.append(Paragraph(f"Fecha: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')}", styles["Normal"]))
         elementos.append(Spacer(1, 20))
 
@@ -105,16 +120,24 @@ def nuevo_pago():
 
         
         for item in productos_factura:
-            subtotal = Decimal(str(item.cantidad)) * Decimal(str(item.producto.precio_unitario))
+            precio_sin_iva = Decimal(str(item.producto.precio_unitario)) * Decimal('0.81')
+            subtotal_sin_iva = Decimal(str(item.cantidad)) * precio_sin_iva
             data.append([
                 item.producto.nombre,
                 str(item.cantidad),
-                f"${item.producto.precio_unitario}",
-                f"${subtotal}"
+                f"${precio_sin_iva:.2f}",
+                f"${subtotal_sin_iva:.2f}"
             ])
 
         
-        data.append(["", "", "Total:", f"${total}"])
+        # Calcular subtotal sin IVA (total * 0.81), IVA 19% (total * 0.19), total final
+        subtotal = total * Decimal('0.81')
+        iva = total * Decimal('0.19')
+        total_final = total
+
+        data.append(["", "", "Subtotal:", f"${subtotal}"])
+        data.append(["", "", "IVA 19%:", f"${iva}"])
+        data.append(["", "", "<b>Total:</b>", f"${total_final}"])
 
         
         tabla = Table(data, colWidths=[200, 80, 100, 100])
@@ -174,25 +197,46 @@ def descargar_factura(factura_id):
     except Exception:
         elementos.append(Paragraph("[Logo no encontrado]", styles["Normal"]))
 
-    elementos.append(Paragraph("JDNS Comunicaciones", styles["Title"]))
+    # Sección Empresa
+    elementos.append(Spacer(1, 12))
+    elementos.append(Paragraph("<b>EMPRESA:</b>", styles["Heading2"]))
+    elementos.append(Paragraph("Nombre: JDNS Comunicaciones", styles["Normal"]))
     elementos.append(Paragraph("NIT: 1101755776-0", styles["Normal"]))
-    elementos.append(Paragraph(f"Cliente: {usuario.nombre}", styles["Normal"]))
+    elementos.append(Paragraph("Teléfono: +57 300 123 4567", styles["Normal"]))
+    elementos.append(Paragraph("Dirección: Carrera 2 4 30, Vélez, Santander", styles["Normal"]))
+    elementos.append(Paragraph("Correo: info@jdnscomunicaciones.com", styles["Normal"]))
+    elementos.append(Spacer(1, 12))
+
+    # Sección Cliente
+    elementos.append(Paragraph("<b>CLIENTE:</b>", styles["Heading2"]))
+    elementos.append(Paragraph(f"Nombre: {usuario.nombre}", styles["Normal"]))
+    elementos.append(Paragraph(f"Correo: {usuario.correo or 'N/A'}", styles["Normal"]))
+    elementos.append(Paragraph(f"Teléfono: {usuario.telefono or 'N/A'}", styles["Normal"]))
+    elementos.append(Paragraph(f"Dirección: {usuario.direccion or 'N/A'}", styles["Normal"]))
+    elementos.append(Spacer(1, 12))
+
     elementos.append(Paragraph(f"Fecha: {factura.fecha_venta.strftime('%d/%m/%Y %H:%M')}", styles["Normal"]))
     elementos.append(Spacer(1, 20))
 
     data = [["Producto", "Cantidad", "P. Unitario", "Subtotal"]]
     for det in detalles:
         
-        precio_unitario = float(det.precio_unitario)
-        subtotal = float(det.subtotal)
+        precio_sin_iva = float(det.precio_unitario) * 0.81
+        subtotal_sin_iva = float(det.cantidad) * precio_sin_iva
         data.append([
             det.producto.nombre,
             str(det.cantidad),
-            f"${precio_unitario:,.2f}",
-            f"${subtotal:,.2f}"
+            f"${precio_sin_iva:,.2f}",
+            f"${subtotal_sin_iva:,.2f}"
         ])
-    total = float(factura.total)
-    data.append(["", "", "Total:", f"${total:,.2f}"])
+    # Calcular subtotal sin IVA (factura.total * 0.81), IVA 19% (factura.total * 0.19), total final
+    subtotal = Decimal(str(factura.total)) * Decimal('0.81')
+    iva = Decimal(str(factura.total)) * Decimal('0.19')
+    total_final = factura.total
+
+    data.append(["", "", "Subtotal:", f"${subtotal}"])
+    data.append(["", "", "IVA 19%:", f"${iva}"])
+    data.append(["", "", "<b>Total:</b>", f"${total_final}"])
 
     tabla = Table(data, colWidths=[200, 80, 100, 100])
     tabla.setStyle(TableStyle([

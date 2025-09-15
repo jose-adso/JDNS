@@ -43,7 +43,7 @@ class Producto(db.Model):
     idproducto = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100))
     descripcion = db.Column(db.Text)
-    tipo = db.Column(db.Enum('repuesto', 'accesorio'))
+    tipo = db.Column(db.Enum('repuesto', 'accesorio', 'telefonos', 'computadores'))
     precio_unitario = db.Column(db.Numeric(10, 2))
     stock = db.Column(db.Integer)
     imagen = db.Column(db.String(200))
@@ -171,6 +171,9 @@ class DetalleReparacionProducto(db.Model):
     cantidad = db.Column(db.Integer, nullable=False)
     producto_idproducto = db.Column(db.Integer, db.ForeignKey('producto.idproducto'), nullable=False)
     reparacion_idreparacion = db.Column(db.Integer, db.ForeignKey('reparacion.idreparacion'), nullable=False)
+
+    producto = db.relationship('Producto', backref='detalle_reparacion_productos')
+    reparacion = db.relationship('Reparacion', backref='detalle_reparacion_productos')
     
 
 

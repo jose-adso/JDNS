@@ -118,6 +118,15 @@
                     </div>
                 </div>
             </div>
+             <div class="col-md-3 mb-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6>Dispositivos</h6>
+                        <p class="small text-muted">Gestionar administradores</p>
+                        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="btn btn-sm btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-3 mb-2">
                 <div class="card h-100">
                     <div class="card-body">
@@ -127,7 +136,54 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6>Historial de Reparaciones</h6>
+                        <p class="small text-muted">Ver historial admin</p>
+                        <a href="{{ url_for('historial_reparacion.listar_todos') }}" class="btn btn-sm btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6>Detalles de Reparaciones</h6>
+                        <p class="small text-muted">Gestionar detalles productos</p>
+                        <a href="{{ url_for('historial_reparacion.listar_detalle') }}" class="btn btn-sm btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Actualizar Costo de Reparación -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Actualizar Costo de Reparación</h6>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ url_for('historial_reparacion.actualizar_costo') }}" method="post" id="form-actualizar-costo">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="reparacion_id" class="form-label">ID de Reparación</label>
+                                    <input type="number" class="form-control" id="reparacion_id" name="reparacion_id" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="costo" class="form-label">Nuevo Costo</label>
+                                    <input type="number" class="form-control" id="costo" name="costo" step="0.01" required>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success">Actualizar Costo</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <button class="btn btn-primary mb-4" onclick="toggleVentaFisica()"><i class="bi bi-cart-plus"></i> Nueva Venta</button>
 
         <div id="ventaFisicaForm" style="display:none;">
@@ -175,9 +231,13 @@
                             </div>
                             <div class="mt-3">
                                 <label class="form-label">Nombre cliente (opcional)</label>
-                                <input id="cliente-nombre" class="form-control mb-2" placeholder="Nombre del cliente"> 
-                                <label class="form-label">Identificación (opcional)</label>
-                                <input id="cliente-identificacion" class="form-control mb-2" placeholder="Cédula / NIT"> 
+                                <input id="cliente-nombre" class="form-control mb-2" placeholder="Nombre del cliente">
+                                <label class="form-label">Correo (opcional)</label>
+                                <input id="cliente-correo" class="form-control mb-2" placeholder="Correo del cliente">
+                                <label class="form-label">Teléfono (opcional)</label>
+                                <input id="cliente-telefono" class="form-control mb-2" placeholder="Teléfono del cliente">
+                                <label class="form-label">Dirección (opcional)</label>
+                                <input id="cliente-direccion" class="form-control mb-2" placeholder="Dirección del cliente">
                                 <label class="form-label">Método de Pago</label>
                                 <select id="metodo-pago" class="form-select">
                                     <option value="efectivo">Efectivo</option>
@@ -294,10 +354,10 @@
         function actualizarCarritoDOM() {
             const carritoDiv = document.getElementById('carrito-items');
             carritoDiv.innerHTML = '';
-            let subtotal = 0;
+            let total_base = 0;
             carrito.forEach((item, index) => {
                 const itemSubtotal = item.precio * item.cantidad;
-                subtotal += itemSubtotal;
+                total_base += itemSubtotal;
                 const el = document.createElement('div');
                 el.className = 'carrito-item d-flex justify-content-between align-items-center mb-2';
                 el.innerHTML = `
@@ -310,8 +370,9 @@
                 carritoDiv.appendChild(el);
             });
             if (!carrito.length) carritoDiv.innerHTML = '<p class="text-muted">No hay productos seleccionados</p>';
-            const iva = subtotal * 0.19;
-            const total = subtotal + iva;
+            const subtotal = total_base * 0.81;
+            const iva = total_base * 0.19;
+            const total = total_base;
             document.getElementById('subtotal-amount').textContent = `$${subtotal.toFixed(2)}`;
             document.getElementById('iva-amount').textContent = `$${iva.toFixed(2)}`;
             document.getElementById('total-amount').textContent = `$${total.toFixed(2)}`;
@@ -365,12 +426,13 @@
                 if (!carrito.length) return alert('No hay productos en el carrito');
                 const metodo = document.getElementById('metodo-pago').value;
                 const clienteNombre = document.getElementById('cliente-nombre').value || null;
-                const clienteIdentificacion = document.getElementById('cliente-identificacion').value || null;
+                const clienteCorreo = document.getElementById('cliente-correo').value || null;
+                const clienteTelefono = document.getElementById('cliente-telefono').value || null;
+                const clienteDireccion = document.getElementById('cliente-direccion').value || null;
 
                 // Construir payload
-                const subtotal = carrito.reduce((s,it) => s + it.precio * it.cantidad, 0);
-                const iva = subtotal * 0.19;
-                const total = parseFloat((subtotal + iva).toFixed(2));
+                const total_base = carrito.reduce((s,it) => s + it.precio * it.cantidad, 0);
+                const total = parseFloat(total_base.toFixed(2));
 
                 try {
                     const resp = await fetch("{{ url_for('ventas_factura.venta_fisica') }}", {
@@ -380,7 +442,9 @@
                             productos: carrito.map(i => ({ id: parseInt(i.id), cantidad: i.cantidad })),
                             metodo_pago: metodo,
                             cliente_nombre: clienteNombre,
-                            cliente_identificacion: clienteIdentificacion,
+                            cliente_correo: clienteCorreo,
+                            cliente_telefono: clienteTelefono,
+                            cliente_direccion: clienteDireccion,
                             total: total
                         })
                     });

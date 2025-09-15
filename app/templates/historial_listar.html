@@ -1,5 +1,7 @@
 <h2>Historial de Reparación - ID {{ reparacion.idreparacion }}</h2>
-<a href="{{ url_for('historial.nuevo_historial', reparacion_id=reparacion.idreparacion) }}" class="btn btn-primary">Nuevo Registro</a>
+<p><strong>Dispositivo:</strong> {{ reparacion.dispositivo.marca }} - IMEI: {{ reparacion.dispositivo.imei }}</p>
+<p><strong>Usuario:</strong> {{ reparacion.usuario.nombre }}</p>
+<a href="{{ url_for('historial_reparacion.nuevo_historial', reparacion_id=reparacion.idreparacion) }}" class="btn btn-primary">Nuevo Registro</a>
 <table class="table table-bordered mt-3">
     <thead>
         <tr>

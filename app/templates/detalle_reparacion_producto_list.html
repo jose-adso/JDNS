@@ -2,7 +2,7 @@
 {% block title %}Detalles Reparación Producto{% endblock %}
 {% block content %}
 <h1>Detalles de Reparación de Producto</h1>
-<a href="{{ url_for('detalle_reparacion_producto.nuevo') }}">Añadir Detalle</a>
+<a href="{{ url_for('historial_reparacion.nuevo_detalle') }}">Añadir Detalle</a>
 <table>
     <thead>
         <tr>
@@ -18,7 +18,7 @@
             <td>{{ d.iddetalle_reparacion_producto }}</td>
             <td>{{ d.producto.nombre }}</td>
             <td>{{ d.cantidad }}</td>
-            <td>{{ d.reparacion_idreparacion }}</td>
+            <td>{{ d.reparacion.idreparacion }}</td>
         </tr>
     {% endfor %}
     </tbody>

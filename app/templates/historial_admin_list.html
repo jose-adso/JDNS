@@ -19,6 +19,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Reparación ID</th>
+                        <th>Dispositivo</th>
                         <th>Estado Anterior</th>
                         <th>Estado Nuevo</th>
                         <th>Observación</th>
@@ -29,7 +30,8 @@
                     {% for h in historial %}
                     <tr>
                         <td>{{ h.idhistorial_reparacion }}</td>
-                        <td><a href="{{ url_for('historial.listar_historial', reparacion_id=h.reparacion_idreparacion) }}">{{ h.reparacion_idreparacion }}</a></td>
+                        <td><a href="{{ url_for('historial_reparacion.listar_historial', reparacion_id=h.reparacion_idreparacion) }}">{{ h.reparacion_idreparacion }}</a></td>
+                        <td>{{ h.reparacion.dispositivo.marca }} - {{ h.reparacion.dispositivo.imei }}</td>
                         <td>{{ h.estado_anterior }}</td>
                         <td>{{ h.estado_nuevo }}</td>
                         <td>{{ h.observacion }}</td>
