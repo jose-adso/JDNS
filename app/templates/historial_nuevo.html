@@ -1,20 +1,173 @@
-<h2>Nuevo Registro de Historial para Reparación ID {{ reparacion.idreparacion }}</h2>
-<form method="POST">
-    <div class="mb-3">
-        <label>Estado Anterior</label>
-        <input type="text" name="estado_anterior" class="form-control" required>
+{% extends "base.html" %}
+
+{% block title %}Nuevo Registro de Historial{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Nuevo Registro de Historial
+                </h2>
+            </div>
+            <div class="card-body">
+                <!-- Información de la Reparación -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="info-box p-3 bg-light rounded">
+                            <h5 class="text-primary mb-2">
+                                <i class="fas fa-wrench me-1"></i>Reparación
+                            </h5>
+                            <p class="mb-1"><strong>ID:</strong> {{ reparacion.idreparacion }}</p>
+                            <p class="mb-1"><strong>Estado:</strong>
+                                <span class="badge bg-{{ 'success' if reparacion.estado == 'completado' else 'warning' }}">
+                                    {{ reparacion.estado|title }}
+                                </span>
+                            </p>
+                            {% if reparacion.costo %}
+                            <p class="mb-0"><strong>Costo:</strong> <span class="text-success fw-bold">${{ reparacion.costo }}</span></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box p-3 bg-light rounded">
+                            <h5 class="text-primary mb-2">
+                                <i class="fas fa-mobile-alt me-1"></i>Dispositivo
+                            </h5>
+                            {% if reparacion.dispositivo %}
+                            <p class="mb-1"><strong>Marca:</strong> {{ reparacion.dispositivo.marca }}</p>
+                            <p class="mb-1"><strong>IMEI:</strong> <code>{{ reparacion.dispositivo.imei }}</code></p>
+                            {% else %}
+                            <p class="mb-1 text-muted">Dispositivo no asignado</p>
+                            {% endif %}
+                            <p class="mb-0"><strong>Cliente:</strong> {{ reparacion.usuario.nombre if reparacion.usuario else 'No asignado' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problema Reportado -->
+                {% if reparacion.problema_reparacion %}
+                <div class="alert alert-warning mb-4">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Problema Reportado:
+                    </h6>
+                    <p class="mb-0">{{ reparacion.problema_reparacion }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Formulario -->
+                <form method="POST" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estado_anterior" class="form-label">
+                                    <i class="fas fa-arrow-left text-warning me-1"></i>Estado Anterior
+                                </label>
+                                <select name="estado_anterior" id="estado_anterior" class="form-select" required>
+                                    <option value="">Seleccionar estado anterior...</option>
+                                    <option value="Recibido">Recibido</option>
+                                    <option value="En diagnóstico">En diagnóstico</option>
+                                    <option value="En reparación">En reparación</option>
+                                    <option value="Pruebas finales">Pruebas finales</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione el estado anterior.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estado_nuevo" class="form-label">
+                                    <i class="fas fa-arrow-right text-success me-1"></i>Estado Nuevo
+                                </label>
+                                <select name="estado_nuevo" id="estado_nuevo" class="form-select" required>
+                                    <option value="">Seleccionar estado nuevo...</option>
+                                    <option value="Recibido">Recibido</option>
+                                    <option value="En diagnóstico">En diagnóstico</option>
+                                    <option value="En reparación">En reparación</option>
+                                    <option value="Pruebas finales">Pruebas finales</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione el estado nuevo.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">
+                            <i class="fas fa-comment text-info me-1"></i>Observación/Comentario
+                        </label>
+                        <textarea name="observacion" id="observacion" class="form-control" rows="4"
+                                  placeholder="Describa los cambios realizados, observaciones técnicas, o cualquier comentario relevante..."
+                                  maxlength="500"></textarea>
+                        <div class="form-text">
+                            Máximo 500 caracteres. Describa detalladamente los trabajos realizados.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="fecha_cambio" class="form-label">
+                            <i class="fas fa-calendar text-primary me-1"></i>Fecha del Cambio
+                        </label>
+                        <input type="date" name="fecha_cambio" id="fecha_cambio" class="form-control"
+                               value="{{ (reparacion.fecha_ingreso or datetime.now()).strftime('%Y-%m-%d') }}" required>
+                        <div class="invalid-feedback">
+                            Por favor seleccione la fecha del cambio.
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('historial_reparacion.listar_historial', reparacion_id=reparacion.idreparacion) }}"
+                           class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Volver al Historial
+                        </a>
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-1"></i>Limpiar
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Guardar Registro
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Estado Nuevo</label>
-        <input type="text" name="estado_nuevo" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Observación</label>
-        <textarea name="observacion" class="form-control"></textarea>
-    </div>
-    <div class="mb-3">
-        <label>Fecha Cambio</label>
-        <input type="date" name="fecha_cambio" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-success">Guardar</button>
-</form>
+</div>
+
+<script>
+// Validación de formulario Bootstrap
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+
+// Auto-llenado de fecha si está vacía
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.getElementById('fecha_cambio');
+    if (!fechaInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        fechaInput.value = today;
+    }
+});
+</script>
+{% endblock %}

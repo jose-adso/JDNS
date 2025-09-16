@@ -1,26 +1,88 @@
-<h2>Historial de Reparación - ID {{ reparacion.idreparacion }}</h2>
-<p><strong>Dispositivo:</strong> {{ reparacion.dispositivo.marca }} - IMEI: {{ reparacion.dispositivo.imei }}</p>
-<p><strong>Usuario:</strong> {{ reparacion.usuario.nombre }}</p>
-<a href="{{ url_for('historial_reparacion.nuevo_historial', reparacion_id=reparacion.idreparacion) }}" class="btn btn-primary">Nuevo Registro</a>
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Estado Anterior</th>
-            <th>Estado Nuevo</th>
-            <th>Observación</th>
-            <th>Fecha Cambio</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for h in historial %}
-        <tr>
-            <td>{{ h.idhistorial_reparacion }}</td>
-            <td>{{ h.estado_anterior }}</td>
-            <td>{{ h.estado_nuevo }}</td>
-            <td>{{ h.observacion }}</td>
-            <td>{{ h.fecha_cambio.strftime("%Y-%m-%d") }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% extends "base.html" %}
+
+{% block title %}Historial de Reparación{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Historial de Reparación - ID {{ reparacion.idreparacion }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="info-box p-3 bg-light rounded">
+                            <h5 class="text-primary mb-2">
+                                <i class="fas fa-mobile-alt me-2"></i>Dispositivo
+                            </h5>
+                            <p class="mb-0">
+                                {% if reparacion.dispositivo %}
+                                    <strong>{{ reparacion.dispositivo.marca }}</strong> - IMEI: {{ reparacion.dispositivo.imei }}
+                                {% else %}
+                                    <span class="text-muted">Dispositivo no asignado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box p-3 bg-light rounded">
+                            <h5 class="text-primary mb-2">
+                                <i class="fas fa-user me-2"></i>Usuario
+                            </h5>
+                            <p class="mb-0">{{ reparacion.usuario.nombre }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-secondary mb-0">Registros del Historial</h4>
+                    <a href="{{ url_for('historial_reparacion.nuevo_historial', reparacion_id=reparacion.idreparacion) }}"
+                       class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Nuevo Registro
+                    </a>
+                </div>
+
+                {% if historial %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                <th><i class="fas fa-arrow-left me-1"></i>Estado Anterior</th>
+                                <th><i class="fas fa-arrow-right me-1"></i>Estado Nuevo</th>
+                                <th><i class="fas fa-comment me-1"></i>Observación</th>
+                                <th><i class="fas fa-calendar me-1"></i>Fecha Cambio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h in historial %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ h.idhistorial_reparacion }}</span></td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">{{ h.estado_anterior }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ h.estado_nuevo }}</span>
+                                </td>
+                                <td>{{ h.observacion }}</td>
+                                <td>{{ h.fecha_cambio.strftime("%d/%m/%Y") }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No hay registros en el historial para esta reparación.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

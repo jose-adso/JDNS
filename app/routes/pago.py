@@ -42,8 +42,7 @@ def nuevo_pago():
             fecha_venta=datetime.utcnow(),
             total=Decimal(str(total)),
             usuario_idusuario=current_user.idusuario,
-            tipo_venta='online',
-            estado_envio='pagado'
+            tipo_venta='online'
         )
         db.session.add(factura)
         db.session.flush()
@@ -62,7 +61,7 @@ def nuevo_pago():
             monto=Decimal(str(total)),
             metodo_pago="tarjeta",
             fecha_pago=datetime.utcnow(),
-            estado_pago="completado",
+            estado_pago="pendiente",
             ventas_factura_idventas_factura=factura.idventas_factura
         )
         db.session.add(nuevo_pago)
@@ -137,7 +136,7 @@ def nuevo_pago():
 
         data.append(["", "", "Subtotal:", f"${subtotal}"])
         data.append(["", "", "IVA 19%:", f"${iva}"])
-        data.append(["", "", "<b>Total:</b>", f"${total_final}"])
+        data.append(["", "", "Total:", f"${total_final}"])
 
         
         tabla = Table(data, colWidths=[200, 80, 100, 100])

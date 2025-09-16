@@ -10,7 +10,7 @@
         <li class="list-group-item"><strong>Fecha:</strong> {{ venta.fecha_venta.strftime('%d/%m/%Y %H:%M') if venta.fecha_venta else 'N/A' }}</li>
         <li class="list-group-item"><strong>Tipo:</strong> {{ venta.tipo_venta or 'N/A' }}</li>
         <li class="list-group-item"><strong>Estado:</strong> {{ venta.estado_envio or 'N/A' }}</li>
-  <li class="list-group-item"><strong>Total:</strong> ${{ '%.2f' % (venta.total or 0) }}</li>
+  <li class="list-group-item">Total: ${{ '%.2f' % (venta.total or 0) }}</li>
       </ul>
     </div>
     <div class="col-md-6 text-end">

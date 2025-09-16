@@ -1,26 +1,137 @@
 {% extends "plantilla.html" %}
 
-{% block title %}Panel del Tecnico {% endblock %}
+{% block title %}Panel del Técnico - JDNS Comunicaciones{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Panel del tecnico</h2>
-    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Cerrar sesión</a>
-  </div>
-
-  <div class="row">
-    
-    <div class="col-md-4">
-      <div class="card">
-        <img src="{{ url_for('static', filename='img/producto1.jpg') }}" class="card-img-top" alt="Producto">
-        <div class="card-body">
-          <h5 class="card-title">Producto destacado</h5>
-          <p class="card-text">Detalles del producto o servicio.</p>
-          <a href="#" class="btn btn-primary">Ver más</a>
-        </div>
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary-custom">
+            <i class="bi bi-tools me-2"></i>Panel del Técnico
+        </h1>
+       
     </div>
-  </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-primary-custom mb-2">
+                        <i class="bi bi-wrench"></i>
+                    </div>
+                    <h5 class="card-title">Reparaciones</h5>
+                    <p class="card-text text-muted">Gestiona las reparaciones asignadas</p>
+                    <a href="{{ url_for('reparacion.listar_reparaciones') }}" class="btn btn-primary-custom">Ver Reparaciones</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-2">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h5 class="card-title">Mensajes</h5>
+                    <p class="card-text text-muted">Comunícate con clientes y admin</p>
+                    <a href="{{ url_for('mensaje_soporte.mensajes_soporte') }}" class="btn btn-success">Ver Mensajes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-2">
+                        <i class="bi bi-device"></i>
+                    </div>
+                    <h5 class="card-title">Dispositivos</h5>
+                    <p class="card-text text-muted">Registra nuevos dispositivos</p>
+                    <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="btn btn-info text-white">Nuevo Dispositivo</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-warning mb-2">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h5 class="card-title">Historial</h5>
+                    <p class="card-text text-muted">Revisa el historial de reparaciones</p>
+                    <a href="{{ url_for('historial_reparacion.buscar_dispositivo') }}" class="btn btn-warning text-white">Ver Historial</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones principales -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-custom">
+                <div class="card-header bg-primary-custom text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Acciones Principales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('reparacion.nueva_reparacion') }}" class="btn btn-primary-custom w-100 mb-2">
+                                <i class="bi bi-plus-circle me-2"></i>Nueva Reparación
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('historial_reparacion.buscar_dispositivo') }}" class="btn btn-outline-primary-custom w-100 mb-2">
+                                <i class="bi bi-search me-2"></i>Buscar Dispositivo
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('mensaje_soporte.nuevo_mensaje_soporte') }}" class="btn btn-success w-100 mb-2">
+                                <i class="bi bi-envelope-plus me-2"></i>Nuevo Mensaje
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('historial_reparacion.listar_todos') }}" class="btn btn-outline-secondary w-100 mb-2">
+                                <i class="bi bi-journal-text me-2"></i>Ver Historial
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del técnico -->
+        <div class="col-lg-4">
+            <div class="card shadow-custom">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>Información
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-primary-custom rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-fill text-white fs-2"></i>
+                        </div>
+                    </div>
+                    <h6 class="text-center mb-2">{{ current_user.nombre }}</h6>
+                    <p class="text-muted text-center small mb-3">Técnico Especializado</p>
+
+                    <div class="small">
+                        <div class="mb-2">
+                            <i class="bi bi-envelope me-2 text-primary-custom"></i>
+                            {{ current_user.correo }}
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-telephone me-2 text-primary-custom"></i>
+                            {{ current_user.telefono }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

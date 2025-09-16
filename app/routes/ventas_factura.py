@@ -50,17 +50,39 @@ def venta_fisica():
         cliente_telefono = data.get("cliente_telefono")
         cliente_direccion = data.get("cliente_direccion")
         from app.models.users import Users
+
         if not usuario_id:
-            # crear un usuario temporal completo (si no se envía nombre, usar 'Cliente')
-            nuevo_usuario = Users(
-                nombre=cliente_nombre or 'Cliente',
-                telefono=cliente_telefono,
-                correo=cliente_correo,
-                direccion=cliente_direccion
-            )
-            db.session.add(nuevo_usuario)
-            db.session.flush()
-            usuario_id = nuevo_usuario.idusuario
+            # Verificar si ya existe un usuario con este correo
+            if cliente_correo:
+                usuario_existente = Users.query.filter_by(correo=cliente_correo).first()
+                if usuario_existente:
+                    usuario_id = usuario_existente.idusuario
+                else:
+                    # Crear un nuevo usuario solo si no existe
+                    nuevo_usuario = Users(
+                        nombre=cliente_nombre or 'Cliente',
+                        telefono=cliente_telefono,
+                        correo=cliente_correo,
+                        direccion=cliente_direccion,
+                        password=None,  # Usuario temporal sin contraseña
+                        rol='cliente'
+                    )
+                    db.session.add(nuevo_usuario)
+                    db.session.flush()
+                    usuario_id = nuevo_usuario.idusuario
+            else:
+                # Si no hay correo, crear usuario temporal sin validación
+                nuevo_usuario = Users(
+                    nombre=cliente_nombre or 'Cliente',
+                    telefono=cliente_telefono,
+                    correo=None,  # Sin correo para evitar conflictos
+                    direccion=cliente_direccion,
+                    password=None,
+                    rol='cliente'
+                )
+                db.session.add(nuevo_usuario)
+                db.session.flush()
+                usuario_id = nuevo_usuario.idusuario
 
         # Crear factura
         # asegurar que total es Decimal

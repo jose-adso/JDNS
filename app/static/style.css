@@ -651,3 +651,69 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+/* --- Sistema de Mensajes de Soporte --- */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(8, 145, 178, 0.3);
+    color: var(--white);
+}
+
+.btn-outline-primary-custom {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary-custom:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary-custom {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+}
+
+/* Estilos para mensajes no leídos */
+.mensaje-no-leido {
+    background-color: rgba(249, 115, 22, 0.1);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.mensaje-leido {
+    background-color: #f8f9fa;
+}
+
+/* Responsive para mensajes */
+@media (max-width: 768px) {
+    .mensaje-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .mensaje-actions {
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+}

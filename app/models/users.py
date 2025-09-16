@@ -109,7 +109,7 @@ class Pago(db.Model):
     monto = db.Column(db.DECIMAL(10, 2))
     metodo_pago = db.Column(db.Enum('efectivo', 'tarjeta', 'transferencia', 'mixto', name='metodo_pago_enum'))
     referencia_pago = db.Column(db.String(100))
-    estado_pago = db.Column(db.Enum('pendiente', 'completado', 'fallido', name='estado_pago_enum'))
+    estado_pago = db.Column(db.Enum('pendiente', 'completado', 'fallido', name='estado_pago_enum'), default='pendiente')
     proveedor_pago = db.Column(db.String(45))
     token_transaccion = db.Column(db.String(100))
     ventas_factura_idventas_factura = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'))

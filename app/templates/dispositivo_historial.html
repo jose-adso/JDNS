@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Historial Completo - {{ dispositivo.marca }} {{ dispositivo.imei }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Información del Dispositivo -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-mobile-alt me-2"></i>
+                        Historial Completo del Dispositivo
+                    </h2>
+                    <a href="{{ url_for('historial_reparacion.buscar_dispositivo') }}"
+                       class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Volver a Búsqueda
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <i class="fas fa-mobile-alt fa-3x text-primary mb-2"></i>
+                            <h4 class="text-primary">{{ dispositivo.marca }}</h4>
+                            <p class="text-muted mb-0">IMEI: {{ dispositivo.imei }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="info-box p-3 bg-light rounded text-center">
+                            <h5 class="text-success mb-1">{{ total_reparaciones }}</h5>
+                            <small class="text-muted">Total Reparaciones</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="info-box p-3 bg-light rounded text-center">
+                            <h5 class="text-info mb-1">${{ costo_total }}</h5>
+                            <small class="text-muted">Costo Total</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="info-box p-3 bg-light rounded text-center">
+                            <h5 class="text-warning mb-1">{{ todos_historiales|length }}</h5>
+                            <small class="text-muted">Registros de Historial</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista Completa de Todas las Reparaciones -->
+        {% if reparaciones %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>
+                    Lista Completa de Todas las Reparaciones ({{ reparaciones|length }})
+                </h4>
+            </div>
+            <div class="card-body">
+                {% for reparacion in reparaciones %}
+                <div class="reparacion-card mb-4 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="text-success mb-1">
+                                <i class="fas fa-wrench me-2"></i>
+                                Reparación #{{ reparacion.idreparacion }}
+                            </h5>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                Fecha de Ingreso: {{ reparacion.fecha_ingreso.strftime('%d/%m/%Y %H:%M') if reparacion.fecha_ingreso else 'Fecha no disponible' }}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge fs-6 bg-{{ 'success' if reparacion.estado == 'completado' else 'warning' }} mb-2">
+                                {{ reparacion.estado|title }}
+                            </span>
+                            {% if reparacion.costo %}
+                            <div class="text-success fw-bold">
+                                <i class="fas fa-dollar-sign me-1"></i>${{ reparacion.costo }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {% if reparacion.problema_reparacion %}
+                            <div class="mb-2">
+                                <strong class="text-danger">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Problema/Daño Reportado:
+                                </strong>
+                                <div class="text-muted">{{ reparacion.problema_reparacion }}</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-2">
+                                <strong><i class="fas fa-user me-1"></i>Cliente:</strong>
+                                {{ reparacion.usuario.nombre if reparacion.usuario else 'No asignado' }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            {% if reparacion.fecha_entrega %}
+                            <div class="mb-2">
+                                <strong class="text-info">
+                                    <i class="fas fa-calendar-check me-1"></i>Fecha de Entrega:
+                                </strong>
+                                {{ reparacion.fecha_entrega.strftime('%d/%m/%Y') }}
+                            </div>
+                            {% endif %}
+
+                            <div>
+                                <a href="{{ url_for('historial_reparacion.listar_historial', reparacion_id=reparacion.idreparacion) }}"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Ver Detalles Completos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registros de esta reparación específica -->
+                    {% if reparacion.historial %}
+                    <div class="registros-section">
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-list me-2"></i>
+                            Registros de Historial de esta Reparación ({{ reparacion.historial|length }} registros)
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Fecha y Hora</th>
+                                        <th>Estado Anterior</th>
+                                        <th>Estado Nuevo</th>
+                                        <th>Observación/Comentario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for h in reparacion.historial %}
+                                    <tr>
+                                        <td class="text-center fw-bold">{{ loop.index }}</td>
+                                        <td>
+                                            <i class="fas fa-clock text-muted me-1"></i>
+                                            {{ h.fecha_cambio.strftime('%d/%m/%Y %H:%M') if h.fecha_cambio else 'Sin fecha' }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">{{ h.estado_anterior }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ h.estado_nuevo }}</span>
+                                        </td>
+                                        <td>
+                                            {% if h.observacion %}
+                                                <span class="text-muted">{{ h.observacion }}</span>
+                                            {% else %}
+                                                <span class="text-muted fst-italic">Sin observación</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning mt-2">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        No hay registros de historial para esta reparación.
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Historial Cronológico Completo -->
+        {% if todos_historiales %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Historial Cronológico Completo
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for item in todos_historiales %}
+                    <div class="timeline-item mb-3">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-exchange-alt me-1"></i>
+                                    Cambio de Estado - Reparación #{{ item.reparacion.idreparacion }}
+                                </h6>
+                                <small class="text-muted">
+                                    {{ item.historial.fecha_cambio.strftime('%d/%m/%Y %H:%M') if item.historial.fecha_cambio else 'Fecha no disponible' }}
+                                </small>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <strong>Estado Anterior:</strong>
+                                    <span class="badge bg-warning text-dark">{{ item.historial.estado_anterior }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Estado Nuevo:</strong>
+                                    <span class="badge bg-success">{{ item.historial.estado_nuevo }}</span>
+                                </div>
+                            </div>
+
+                            {% if item.historial.observacion %}
+                            <div class="mb-2">
+                                <strong><i class="fas fa-comment me-1"></i>Observación:</strong>
+                                <p class="mb-1 text-muted">{{ item.historial.observacion }}</p>
+                            </div>
+                            {% endif %}
+
+                            <div class="text-muted small">
+                                <i class="fas fa-user me-1"></i>Cliente: {{ item.reparacion.usuario.nombre if item.reparacion.usuario else 'No asignado' }}
+                                {% if item.reparacion.problema_reparacion %}
+                                | <i class="fas fa-exclamation-triangle me-1"></i>Problema: {{ item.reparacion.problema_reparacion[:50] }}...
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle me-2"></i>
+            Este dispositivo no tiene registros de historial de reparaciones.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-left: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid #007bff;
+}
+</style>
+{% endblock %}

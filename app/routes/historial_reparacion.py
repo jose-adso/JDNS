@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort, flash
 from app import db
-from app.models.users import HistorialReparacion, Reparacion, DetalleReparacionProducto, Producto
+from app.models.users import HistorialReparacion, Reparacion, DetalleReparacionProducto, Producto, Dispositivo
 from datetime import datetime
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
@@ -40,10 +40,29 @@ def listar_todos():
     # Sólo admins
     if getattr(current_user, 'rol', None) != 'admin':
         abort(403)
-    todos = HistorialReparacion.query.order_by(HistorialReparacion.fecha_cambio.desc()).all()
+    todos = HistorialReparacion.query.options(
+        joinedload(HistorialReparacion.reparacion).joinedload(Reparacion.dispositivo)
+    ).order_by(HistorialReparacion.fecha_cambio.desc()).all()
     print(f"DEBUG: Total historial entries: {len(todos)}")
-    for h in todos[:5]:  # Log first 5
-        print(f"DEBUG: Historial ID: {h.idhistorial_reparacion}, Reparacion ID: {h.reparacion_idreparacion}, Dispositivo Marca: {h.reparacion.dispositivo.marca if h.reparacion and h.reparacion.dispositivo else 'None'}")
+    dispositivos_vistos = set()
+    reparaciones_sin_dispositivo = 0
+    for h in todos:
+        if not h.reparacion:
+            print(f"DEBUG: ERROR - Historial ID {h.idhistorial_reparacion} no tiene reparacion asociada")
+            continue
+        dispositivo_id = h.reparacion.dispositivo_iddispositivo
+        dispositivo = h.reparacion.dispositivo
+        if dispositivo_id is None:
+            reparaciones_sin_dispositivo += 1
+            print(f"DEBUG: Reparacion ID {h.reparacion_idreparacion} no tiene dispositivo_iddispositivo asignado")
+        elif dispositivo is None:
+            print(f"DEBUG: Reparacion ID {h.reparacion_idreparacion} tiene dispositivo_id {dispositivo_id} pero no se pudo cargar el dispositivo")
+        else:
+            dispositivo_marca = dispositivo.marca
+            print(f"DEBUG: Historial ID: {h.idhistorial_reparacion}, Reparacion ID: {h.reparacion_idreparacion}, Dispositivo ID: {dispositivo_id}, Marca: {dispositivo_marca}")
+            dispositivos_vistos.add(dispositivo_id)
+    print(f"DEBUG: Dispositivos únicos con historial: {len(dispositivos_vistos)}")
+    print(f"DEBUG: Reparaciones sin dispositivo asignado: {reparaciones_sin_dispositivo}")
     return render_template('historial_admin_list.html', historial=todos)
 
 
@@ -78,6 +97,66 @@ def nuevo_detalle():
         flash('Detalle de reparación creado correctamente', 'success')
         return redirect(url_for('historial_reparacion.listar_detalle'))
     return render_template('detalle_reparacion_producto_nuevo.html', productos=productos, reparaciones=reparaciones)
+
+
+@bp.route('/dispositivo/buscar', methods=['GET', 'POST'])
+@login_required
+def buscar_dispositivo():
+    if request.method == 'POST':
+        busqueda = request.form.get('busqueda', '').strip()
+        if busqueda:
+            # Buscar por IMEI o marca
+            dispositivos = Dispositivo.query.filter(
+                db.or_(
+                    Dispositivo.imei.contains(busqueda),
+                    Dispositivo.marca.contains(busqueda)
+                )
+            ).all()
+        else:
+            dispositivos = Dispositivo.query.all()
+    else:
+        dispositivos = Dispositivo.query.all()
+
+    return render_template('dispositivo_buscar.html', dispositivos=dispositivos)
+
+
+@bp.route('/dispositivo/<int:dispositivo_id>/historial')
+@login_required
+def historial_dispositivo(dispositivo_id):
+    dispositivo = Dispositivo.query.get_or_404(dispositivo_id)
+
+    # Obtener todas las reparaciones del dispositivo
+    reparaciones = Reparacion.query.filter_by(dispositivo_iddispositivo=dispositivo_id).options(
+        joinedload(Reparacion.historial),
+        joinedload(Reparacion.usuario)
+    ).order_by(Reparacion.fecha_ingreso.desc()).all()
+
+    # Calcular estadísticas
+    total_reparaciones = len(reparaciones)
+    costo_total = sum(r.costo for r in reparaciones if r.costo)
+
+    # Obtener todos los historiales de todas las reparaciones
+    todos_historiales = []
+    for reparacion in reparaciones:
+        for h in reparacion.historial:
+            todos_historiales.append({
+                'historial': h,
+                'reparacion': reparacion
+            })
+
+    # Ordenar por fecha descendente
+    todos_historiales.sort(key=lambda x: x['historial'].fecha_cambio, reverse=True)
+
+    print(f"DEBUG: Dispositivo {dispositivo.marca} - {dispositivo.imei}")
+    print(f"DEBUG: Total reparaciones: {total_reparaciones}")
+    print(f"DEBUG: Total historiales: {len(todos_historiales)}")
+
+    return render_template('dispositivo_historial.html',
+                         dispositivo=dispositivo,
+                         reparaciones=reparaciones,
+                         todos_historiales=todos_historiales,
+                         total_reparaciones=total_reparaciones,
+                         costo_total=costo_total)
 
 
 @bp.route('/admin/actualizar_costo', methods=['POST'])

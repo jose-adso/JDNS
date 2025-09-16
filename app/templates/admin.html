@@ -1,191 +1,96 @@
-<!DOCTYPE html>
-<html lang="es">
-<!DOCTYPE html>
-<html lang="es">
+{% extends "plantilla.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Mi Tienda{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block title %}Panel Administrativo - JDNS Comunicaciones{% endblock %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    {% block extra_head %}{% endblock %}
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand text-primary-custom" href="{{ url_for('auth.dashboard') }}">
-                <i class="bi bi-phone me-2"></i>JDNS COMUNICACIONES
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.dashboard') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('producto.listar_productos') }}">Productos</a></li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
-                    <!-- Notificaciones -->
-                    <div class="nav-item dropdown me-2">
-                        <a class="nav-link position-relative text-white" href="#" id="notiDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bell" style="font-size:1.1rem"></i>
-                            <span id="noti-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;display:none;">0</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="notiDropdown" style="min-width:280px;">
-                            <li><strong class="dropdown-item-text">Notificaciones</strong></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li id="noti-list"><div class="dropdown-item-text text-muted small">Cargando...</div></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-center" href="{{ url_for('notificaciones.notificaciones') }}">Ver todas</a></li>
-                        </ul>
-                    </div>
-                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger ms-2">Cerrar sesión</a>
-                </form>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-3 mb-4">
-        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-            <i class="bi bi-list"></i> Opciones administración
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary-custom">
+            <i class="bi bi-shield-check me-2"></i>Panel Administrativo
+        </h1>
+        <button class="btn btn-primary-custom" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAdmin"
+            aria-controls="offcanvasAdmin">
+            <i class="bi bi-list me-2"></i>Opciones Administración
         </button>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasRightLabel">Panel de administración</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Offcanvas Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAdmin" aria-labelledby="offcanvasAdminLabel">
+        <div class="offcanvas-header bg-primary-custom text-white">
+            <h5 class="offcanvas-title" id="offcanvasAdminLabel">
+                <i class="bi bi-gear me-2"></i>Panel de Administración
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="mb-3">
+                <h6 class="text-primary-custom fw-bold">
+                    <i class="bi bi-building me-2"></i>Gestión Empresarial
+                </h6>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><a href="{{ url_for('empresa.listar') }}" class="text-decoration-none">
+                            <i class="bi bi-building me-2"></i>Empresas</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('producto.listar_productos') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-box-seam me-2"></i>Productos</a></li>
+                </ul>
             </div>
-            <div class="offcanvas-body">
-                <ul class="list-group">
-                    <li class="list-group-item"><a href="{{ url_for('empresa.listar') }}">Empresas</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('producto.listar') }}">Productos</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('auth.register_admin') }}">Usuarios</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('pago.listar_pedidos') }}">Pago</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('dispositivo.nuevo_dispositivo') }}">Dispositivos</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('reparacion.listar_reparaciones') }}">Reparación</a></li>
+
+            <div class="mb-3">
+                <h6 class="text-primary-custom fw-bold">
+                    <i class="bi bi-people me-2"></i>Gestión de Usuarios
+                </h6>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><a href="{{ url_for('auth.register_admin') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-person-plus me-2"></i>Usuarios</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('mensaje_soporte.mensajes_soporte') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-chat-dots me-2"></i>Mensajes de Soporte</a></li>
+                </ul>
+            </div>
+
+            <div class="mb-3">
+                <h6 class="text-primary-custom fw-bold">
+                    <i class="bi bi-cash me-2"></i>Gestión Financiera
+                </h6>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><a href="{{ url_for('pago.listar_pedidos') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-credit-card me-2"></i>Pagos</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('ventas_factura.listar_ventas') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-receipt me-2"></i>Facturas</a></li>
+                </ul>
+            </div>
+
+            <div class="mb-3">
+                <h6 class="text-primary-custom fw-bold">
+                    <i class="bi bi-tools me-2"></i>Gestión Técnica
+                </h6>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="{{ url_for('dispositivo.nuevo_dispositivo') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-device me-2"></i>Dispositivos</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('reparacion.listar_reparaciones') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-wrench me-2"></i>Reparaciones</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('historial_reparacion.listar_todos') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-clock-history me-2"></i>Historial</a></li>
                 </ul>
             </div>
         </div>
     </div>
-
-    {% block content %}
     <div class="container">
         <h2 class="mb-4">Panel Administrativo Principal</h2>
 
-        <!-- Acciones rápidas -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Facturas / Ventas</h6>
-                        <p class="small text-muted">Ver y gestionar facturas</p>
-                        <a href="{{ url_for('ventas_factura.listar_ventas') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Productos</h6>
-                        <p class="small text-muted">Lista de productos</p>
-                        <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Usuarios</h6>
-                        <p class="small text-muted">Gestionar administradores</p>
-                        <a href="{{ url_for('auth.register_admin') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Pagos</h6>
-                        <p class="small text-muted">Revisar pagos</p>
-                        <a href="{{ url_for('pago.listar_pedidos') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-             <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Dispositivos</h6>
-                        <p class="small text-muted">Gestionar administradores</p>
-                        <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Reparaciones</h6>
-                        <p class="small text-muted">Lista de reparaciones</p>
-                        <a href="{{ url_for('reparacion.listar_reparaciones') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Historial de Reparaciones</h6>
-                        <p class="small text-muted">Ver historial admin</p>
-                        <a href="{{ url_for('historial_reparacion.listar_todos') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6>Detalles de Reparaciones</h6>
-                        <p class="small text-muted">Gestionar detalles productos</p>
-                        <a href="{{ url_for('historial_reparacion.listar_detalle') }}" class="btn btn-sm btn-primary">Ir</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Actualizar Costo de Reparación -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Actualizar Costo de Reparación</h6>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ url_for('historial_reparacion.actualizar_costo') }}" method="post" id="form-actualizar-costo">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="reparacion_id" class="form-label">ID de Reparación</label>
-                                    <input type="number" class="form-control" id="reparacion_id" name="reparacion_id" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="costo" class="form-label">Nuevo Costo</label>
-                                    <input type="number" class="form-control" id="costo" name="costo" step="0.01" required>
-                                </div>
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-success">Actualizar Costo</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-primary mb-4" onclick="toggleVentaFisica()"><i class="bi bi-cart-plus"></i> Nueva Venta</button>
-
+        <button class="btn btn-primary-custom btn-lg" onclick="toggleVentaFisica()">
+            <i class="bi bi-cart-plus me-2"></i>Nueva Venta Física
+        </button>
         <div id="ventaFisicaForm" style="display:none;">
             <div class="row">
                 <div class="col-lg-7 mb-4">
@@ -196,12 +101,16 @@
                             <div class="row" id="productosDisponibles">
                                 {% for p in productos %}
                                 <div class="col-6 mb-3">
-                                    <div class="card producto-item h-100" data-id="{{ p.idproducto }}" data-nombre="{{ p.nombre|e }}" data-precio="{{ p.precio_unitario }}" data-stock="{{ p.stock }}">
+                                    <div class="card producto-item h-100" data-id="{{ p.idproducto }}"
+                                        data-nombre="{{ p.nombre|e }}" data-precio="{{ p.precio_unitario }}"
+                                        data-stock="{{ p.stock }}">
                                         <div class="card-body text-center">
                                             <h6 class="card-title">{{ p.nombre }}</h6>
                                             <p class="text-muted small mb-1">Stock: {{ p.stock }}</p>
                                             <strong class="text-success">${{ p.precio_unitario }}</strong>
-                                            <div class="mt-2"><button class="agregar-producto btn btn-sm btn-primary">Agregar</button></div>
+                                            <div class="mt-2"><button
+                                                    class="agregar-producto btn btn-sm btn-primary">Agregar</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -213,9 +122,13 @@
 
                 <div class="col-lg-5">
                     <div class="card">
-                        <div class="card-header"><h5>Carrito de Venta</h5></div>
+                        <div class="card-header">
+                            <h5>Carrito de Venta</h5>
+                        </div>
                         <div class="card-body">
-                            <div id="carrito-items"><p class="text-muted">No hay productos seleccionados</p></div>
+                            <div id="carrito-items">
+                                <p class="text-muted">No hay productos seleccionados</p>
+                            </div>
                             <hr>
                             <div class="row">
                                 <div class="col-6"><strong>Subtotal:</strong></div>
@@ -235,9 +148,11 @@
                                 <label class="form-label">Correo (opcional)</label>
                                 <input id="cliente-correo" class="form-control mb-2" placeholder="Correo del cliente">
                                 <label class="form-label">Teléfono (opcional)</label>
-                                <input id="cliente-telefono" class="form-control mb-2" placeholder="Teléfono del cliente">
+                                <input id="cliente-telefono" class="form-control mb-2"
+                                    placeholder="Teléfono del cliente">
                                 <label class="form-label">Dirección (opcional)</label>
-                                <input id="cliente-direccion" class="form-control mb-2" placeholder="Dirección del cliente">
+                                <input id="cliente-direccion" class="form-control mb-2"
+                                    placeholder="Dirección del cliente">
                                 <label class="form-label">Método de Pago</label>
                                 <select id="metodo-pago" class="form-select">
                                     <option value="efectivo">Efectivo</option>
@@ -253,89 +168,114 @@
             </div>
         </div>
     </div>
-    {% endblock %}
 
-    <footer class="text-center py-4 mt-auto">
-        <div class="container"><span class="text-muted">© 2025 Mi Empresa. Todos los derechos reservados.</span></div>
-    </footer>
+    <!-- Acciones rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-primary-custom mb-2">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <h5 class="card-title">Facturas / Ventas</h5>
+                    <p class="card-text text-muted">Ver y gestionar facturas</p>
+                    <a href="{{ url_for('ventas_factura.listar_ventas') }}" class="btn btn-primary-custom">Ver
+                        Facturas</a>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-2">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h5 class="card-title">Productos</h5>
+                    <p class="card-text text-muted">Lista de productos</p>
+                    <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-success">Ver Productos</a>
+                </div>
+            </div>
+        </div>
 
-    <script>
-    // Carga de notificaciones en el dropdown (usa API JSON) y marca como leídas al abrir
-    (function(){
-        const notiDropdown = document.getElementById('notiDropdown');
-        const notiList = document.getElementById('noti-list');
-        const notiBadge = document.getElementById('noti-badge');
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-2">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="card-text text-muted">Gestionar administradores</p>
+                    <a href="{{ url_for('auth.register_admin') }}" class="btn btn-info text-white">Ver Usuarios</a>
+                </div>
+            </div>
+        </div>
 
-        async function fetchNotis(){
-            const resp = await fetch("{{ url_for('notificaciones.notificaciones_api') }}", { credentials: 'same-origin' });
-            if (!resp.ok) throw new Error('No se pudo obtener JSON');
-            return await resp.json();
-        }
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-warning mb-2">
+                        <i class="bi bi-cash"></i>
+                    </div>
+                    <h5 class="card-title">Pagos</h5>
+                    <p class="card-text text-muted">Revisar pagos</p>
+                    <a href="{{ url_for('pago.listar_pedidos') }}" class="btn btn-warning text-white">Ver Pagos</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function renderNotis(notis){
-            notiList.innerHTML = '';
-            if (!notis || notis.length === 0){
-                notiList.innerHTML = '<div class="dropdown-item-text text-muted small">No hay notificaciones</div>';
-                notiBadge.style.display = 'none';
-                return;
-            }
-            let unread = 0;
-            notis.slice(0,8).forEach(n => {
-                const item = document.createElement('div');
-                item.className = 'dropdown-item d-flex justify-content-between align-items-start';
-                const left = document.createElement('div');
-                left.innerHTML = `<div class="fw-bold small mb-1">${n.tipo || 'Notificación'}</div><div class="small text-muted">${n.mensaje || ''}</div><div class="small text-muted">${n.fecha_envio || ''}</div>`;
-                const right = document.createElement('div');
-                if (!n.leida){
-                    const b = document.createElement('span'); b.className = 'badge bg-danger'; b.textContent = 'Nuevo';
-                    right.appendChild(b);
-                    unread++;
-                } else {
-                    const b = document.createElement('span'); b.className = 'badge bg-secondary'; b.textContent = 'Leída';
-                    right.appendChild(b);
-                }
-                item.appendChild(left);
-                item.appendChild(right);
-                notiList.appendChild(item);
-                const hr = document.createElement('div'); hr.innerHTML = '<hr class="dropdown-divider">'; notiList.appendChild(hr);
-            });
-            notiBadge.textContent = unread;
-            notiBadge.style.display = unread ? 'inline-block' : 'none';
-        }
+    <!-- Gestión Técnica -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-danger mb-2">
+                        <i class="bi bi-device"></i>
+                    </div>
+                    <h5 class="card-title">Dispositivos</h5>
+                    <p class="card-text text-muted">Gestionar dispositivos</p>
+                    <a href="{{ url_for('dispositivo.nuevo_dispositivo') }}" class="btn btn-danger">Ver Dispositivos</a>
+                </div>
+            </div>
+        </div>
 
-        async function loadNotificaciones(){
-            try{
-                const notis = await fetchNotis();
-                renderNotis(notis);
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-secondary mb-2">
+                        <i class="bi bi-wrench"></i>
+                    </div>
+                    <h5 class="card-title">Reparaciones</h5>
+                    <p class="card-text text-muted">Lista de reparaciones</p>
+                    <a href="{{ url_for('reparacion.listar_reparaciones') }}" class="btn btn-secondary">Ver
+                        Reparaciones</a>
+                </div>
+            </div>
+        </div>
 
-                // Marcar como leídas las no leídas (async, en background)
-                for(const n of notis){
-                    if (!n.leida){
-                        try{
-                            await fetch(`{{ url_for('notificaciones.marcar_leida', id=0) }}`.replace('/0', `/${n.id}`), { method: 'POST', credentials: 'same-origin' });
-                        }catch(e){ /* ignorar errores individuales */ }
-                    }
-                }
-                // actualizar badge tras marcar
-                notiBadge.style.display = 'none';
-            }catch(e){
-                notiList.innerHTML = '<div class="dropdown-item-text text-danger small">Error cargando notificaciones</div>';
-                notiBadge.style.display = 'none';
-            }
-        }
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-custom text-center h-100">
+                <div class="card-body">
+                    <div class="display-4 text-dark mb-2">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h5 class="card-title">Historial</h5>
+                    <p class="card-text text-muted">Ver historial admin</p>
+                    <a href="{{ url_for('historial_reparacion.listar_todos') }}" class="btn btn-dark">Ver Historial</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        if (notiDropdown) {
-            notiDropdown.addEventListener('click', loadNotificaciones);
-            // carga inicial en background
-            loadNotificaciones();
-            // refresco cada 20s
-            setInterval(async ()=>{
-                try{ const notis = await fetchNotis(); renderNotis(notis); }catch(e){}
-            }, 20000);
-        }
-    })();
+   
+    
+
+    
+</div>
+
+{% block extra_js %}
+<script>
     // JS para seleccionar productos y manejar carrito en el panel admin
     document.addEventListener('DOMContentLoaded', function () {
         const buscarInput = document.getElementById('buscarProducto');
@@ -359,14 +299,14 @@
                 const itemSubtotal = item.precio * item.cantidad;
                 total_base += itemSubtotal;
                 const el = document.createElement('div');
-                el.className = 'carrito-item d-flex justify-content-between align-items-center mb-2';
+                el.className = 'carrito-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded';
                 el.innerHTML = `
-                    <div><strong>${item.nombre}</strong><br><small>$${item.precio.toFixed(2)} x ${item.cantidad} = $${itemSubtotal.toFixed(2)}</small></div>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, -1)">-</button>
-                        <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, 1)">+</button>
-                        <button class="btn btn-outline-danger" onclick="window.__eliminarItem(${index})">×</button>
-                    </div>`;
+                <div><strong>${item.nombre}</strong><br><small>$${item.precio.toFixed(2)} x ${item.cantidad} = $${itemSubtotal.toFixed(2)}</small></div>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, -1)">-</button>
+                    <button class="btn btn-outline-secondary" onclick="window.__cambiarCantidad(${index}, 1)">+</button>
+                    <button class="btn btn-outline-danger" onclick="window.__eliminarItem(${index})">×</button>
+                </div>`;
                 carritoDiv.appendChild(el);
             });
             if (!carrito.length) carritoDiv.innerHTML = '<p class="text-muted">No hay productos seleccionados</p>';
@@ -378,7 +318,7 @@
             document.getElementById('total-amount').textContent = `$${total.toFixed(2)}`;
         }
 
-        window.__cambiarCantidad = function(index, cambio) {
+        window.__cambiarCantidad = function (index, cambio) {
             const item = carrito[index];
             if (!item) return;
             const nueva = item.cantidad + cambio;
@@ -387,7 +327,7 @@
             actualizarCarritoDOM();
         };
 
-        window.__eliminarItem = function(index) {
+        window.__eliminarItem = function (index) {
             carrito.splice(index, 1);
             actualizarCarritoDOM();
         };
@@ -413,7 +353,7 @@
         });
 
         // Toggle form
-        window.toggleVentaFisica = function() {
+        window.toggleVentaFisica = function () {
             const f = document.getElementById('ventaFisicaForm');
             if (!f) return;
             f.style.display = f.style.display === 'none' ? 'block' : 'none';
@@ -431,7 +371,7 @@
                 const clienteDireccion = document.getElementById('cliente-direccion').value || null;
 
                 // Construir payload
-                const total_base = carrito.reduce((s,it) => s + it.precio * it.cantidad, 0);
+                const total_base = carrito.reduce((s, it) => s + it.precio * it.cantidad, 0);
                 const total = parseFloat(total_base.toFixed(2));
 
                 try {
@@ -465,7 +405,7 @@
             });
         }
     });
-    </script>
+</script>
+{% endblock %}
 
-</body>
-</html>
+{% endblock %}

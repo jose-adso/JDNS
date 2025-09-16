@@ -3,6 +3,21 @@
 {% block title %}Panel del Cliente - JDNS Comunicaciones{% endblock %}
 
 {% block content %}
+<!-- Contenedor principal para asegurar que la navbar se muestre -->
+<div class="main-content">
+<style>
+/* Asegurar que la navbar sea visible */
+.navbar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Asegurar que el dropdown de notificaciones funcione */
+.dropdown-menu {
+    z-index: 1050;
+}
+</style>
 
 
 <section id="inicio" class="parallax-section hero-section">
@@ -318,6 +333,31 @@
             });
         }
 
+        // Verificar que los elementos de notificaciones existan
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Cliente.html cargado');
+            const notiList = document.getElementById('client-noti-list');
+            const notiBadge = document.getElementById('client-noti-badge');
+            console.log('Elemento client-noti-list:', notiList);
+            console.log('Elemento client-noti-badge:', notiBadge);
+
+            // Intentar llamar a la API de notificaciones con credenciales
+            fetch('/notificaciones/api', {
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    console.log('Respuesta API notificaciones:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Datos de notificaciones:', data);
+                    console.log('Número de notificaciones:', data.length);
+                })
+                .catch(error => {
+                    console.log('Error al llamar API notificaciones:', error);
+                });
+        });
+
         function cerrarSesion() {
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
                 alert('Sesión cerrada exitosamente');
@@ -343,4 +383,5 @@
             console.log('Datos del formulario:', datos);
         }
     </script>
-    {% endblock %}
+</div>
+{% endblock %}

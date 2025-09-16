@@ -1,26 +1,75 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Nuevo Mensaje de Soporte</title>
-</head>
-<body>
-    <h1>Crear Nuevo Mensaje de Soporte</h1>
-    <form method="POST">
-        <label for="emisor_id">ID de Emisor:</label>
-        <input type="number" id="emisor_id" name="emisor_id" required><br><br>
-        
-        <label for="receptor_id">ID de Receptor:</label>
-        <input type="number" id="receptor_id" name="receptor_id" required><br><br>
-        
-        <label for="asunto">Asunto:</label>
-        <input type="text" id="asunto" name="asunto" required><br><br>
-        
-        <label for="mensaje">Mensaje:</label><br>
-        <textarea id="mensaje" name="mensaje" rows="5" cols="50" required></textarea><br><br>
-        
-        <input type="submit" value="Crear Mensaje">
-    </form>
-    <a href="{{ url_for('mensajes_soporte') }}">Volver a Mensajes de Soporte</a>
-</body>
-</html>
+{% extends "plantilla.html" %}
+
+{% block title %}Nuevo Mensaje de Soporte - JDNS Comunicaciones{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary-custom text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Enviar Nuevo Mensaje de Soporte
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="receptor_id" class="form-label fw-bold">
+                                <i class="bi bi-person-fill me-2"></i>Destinatario
+                            </label>
+                            <select class="form-select" id="receptor_id" name="receptor_id" required>
+                                <option value="">Selecciona un destinatario...</option>
+                                {% for receptor in receptores %}
+                                    <option value="{{ receptor.idusuario }}">
+                                        {{ receptor.nombre }} ({{ receptor.rol }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="asunto" class="form-label fw-bold">
+                                <i class="bi bi-tag-fill me-2"></i>Asunto
+                            </label>
+                            <input type="text" class="form-control" id="asunto" name="asunto"
+                                   placeholder="Escribe un asunto descriptivo..." required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mensaje" class="form-label fw-bold">
+                                <i class="bi bi-chat-text-fill me-2"></i>Mensaje
+                            </label>
+                            <textarea class="form-control" id="mensaje" name="mensaje" rows="6"
+                                      placeholder="Describe tu consulta o problema..." required></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('mensaje_soporte.mensajes_soporte') }}" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="bi bi-send-fill me-2"></i>Enviar Mensaje
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="card mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title text-primary-custom">
+                        <i class="bi bi-info-circle-fill me-2"></i>Información Importante
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Los mensajes son respondidos en un plazo máximo de 24 horas</li>
+                        <li>Proporciona detalles específicos sobre tu consulta</li>
+                        <li>Puedes adjuntar imágenes o información adicional si es necesario</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

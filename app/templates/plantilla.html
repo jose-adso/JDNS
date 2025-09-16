@@ -69,7 +69,7 @@
     {% endblock %}
     <style>
         body {
-            padding-top: 0;
+            padding-top: 80px;
             background-color: #e3f2fd;
         }
         footer {
@@ -86,15 +86,72 @@
     <div class="container">
         <a class="navbar-brand text-primary-custom" href="{{ url_for('auth.dashboard') }}">
     <script>
-    // Notificaciones: polling cada 10s, render en dropdown, marcar como leída y reproducir beep con WebAudio
+    // Sistema de notificaciones mejorado con mensajes de soporte
     document.addEventListener('DOMContentLoaded', function(){
-        const API = "{{ url_for('notificaciones.notificaciones_api') }}";
-        const LEER = (id) => `{{ url_for('notificaciones.marcar_leida', id=0) }}`.replace('/0', `/${id}`);
+        const API_NOTI = "{{ url_for('notificaciones.notificaciones_api') }}";
+        const API_MSJ = "{{ url_for('mensaje_soporte.mensajes_soporte') }}";
+        const LEER_NOTI = (id) => `{{ url_for('notificaciones.marcar_leida', id=0) }}`.replace('/0', `/${id}`);
+        const LEER_MSJ = (id) => `{{ url_for('mensaje_soporte.marcar_leido', id=0) }}`.replace('/0', `/${id}`);
+
         const listEl = document.getElementById('client-noti-list');
         const badgeEl = document.getElementById('client-noti-badge');
-        let lastUnread = 0;
 
-        // WebAudio beep synthesizer
+        let lastUnreadTotal = 0;
+        let alertContainer = null;
+
+        // Crear contenedor de alertas si no existe
+        function createAlertContainer() {
+            if (!alertContainer) {
+                alertContainer = document.createElement('div');
+                alertContainer.id = 'alert-container';
+                alertContainer.className = 'position-fixed top-0 end-0 p-3';
+                alertContainer.style.zIndex = '1060';
+                document.body.appendChild(alertContainer);
+            }
+            return alertContainer;
+        }
+
+        // Mostrar alerta igual que las notificaciones
+        function showNewMessageAlert(message, type = 'info') {
+            const container = createAlertContainer();
+            const alertId = 'alert-' + Date.now();
+
+            const alertDiv = document.createElement('div');
+            alertDiv.id = alertId;
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show shadow`;
+            alertDiv.style.cssText = `
+                min-width: 300px;
+                margin-bottom: 10px;
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+
+            const iconClass = type === 'success' ? 'bi-chat-dots-fill text-success' : 'bi-bell-fill text-primary';
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="bi ${iconClass} me-3 fs-4"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${type === 'success' ? 'Nuevo Mensaje de Soporte' : 'Nueva Notificación'}</div>
+                        <div class="small opacity-75">${message}</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+
+            container.appendChild(alertDiv);
+
+            // Auto-remover después de 6 segundos
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }
+            }, 6000);
+        }
+
+        // WebAudio beep synthesizer mejorado
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(){
             try{
@@ -105,33 +162,96 @@
                 g.gain.value = 0.08;
                 o.connect(g); g.connect(audioCtx.destination);
                 o.start();
-                setTimeout(()=>{ o.stop(); }, 120);
+                setTimeout(()=>{ o.stop(); }, 200);
             }catch(e){ console.warn('Audio not available', e); }
         }
 
-        async function fetchNotis(){
+        async function fetchMensajesSoporte(){
             try{
-                const r = await fetch(API, { credentials: 'same-origin' });
-                if(!r.ok) throw new Error('Network');
-                const data = await r.json();
-                const notis = Array.isArray(data) ? data : (data.notifications || []);
-                const unread = notis.filter(n=>!n.leido).length;
+                const response = await fetch(API_MSJ, { credentials: 'same-origin' });
+                if (!response.ok) return { mensajes_recibidos: [], mensajes_enviados: [] };
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Extraer información de mensajes no leídos del HTML
+                const unreadElements = doc.querySelectorAll('.badge.bg-primary');
+                return {
+                    unreadCount: unreadElements.length,
+                    hasNewMessages: unreadElements.length > 0
+                };
+            } catch(e) {
+                console.warn('Error fetching mensajes soporte:', e);
+                return { mensajes_recibidos: [], mensajes_enviados: [] };
+            }
+        }
+
+        async function fetchNotificaciones(){
+            try{
+                const [notisResponse, mensajesData] = await Promise.all([
+                    fetch(API_NOTI, { credentials: 'same-origin' }),
+                    fetchMensajesSoporte()
+                ]);
+
+                if(!notisResponse.ok) throw new Error(`HTTP ${notisResponse.status}`);
+                const notisData = await notisResponse.json();
+
+                const notis = Array.isArray(notisData) ? notisData : (notisData.notifications || []);
+                const unreadNotis = notis.filter(n=>!n.leido).length;
+                const unreadMensajes = mensajesData.unreadCount || 0;
+                const totalUnread = unreadNotis + unreadMensajes;
 
                 // Update badge
-                if(unread>0){ badgeEl.style.display='inline-block'; badgeEl.textContent = unread; }
-                else { badgeEl.style.display='none'; }
+                if(totalUnread > 0){
+                    badgeEl.style.display = 'inline-block';
+                    badgeEl.textContent = totalUnread;
+                } else {
+                    badgeEl.style.display = 'none';
+                }
 
-                // Play sound if new unread arrived
-                if(unread>lastUnread && lastUnread!==0){ playBeep(); }
-                lastUnread = unread;
+                // Mostrar alerta si hay nuevos mensajes
+                if(totalUnread > lastUnreadTotal && lastUnreadTotal !== 0){
+                    if(unreadMensajes > 0) {
+                        showNewMessageAlert('Tienes nuevos mensajes de soporte', 'success');
+                    } else if(unreadNotis > 0) {
+                        showNewMessageAlert('Tienes nuevas notificaciones', 'info');
+                    }
+                    playBeep();
+                }
+                lastUnreadTotal = totalUnread;
 
-                // Render list (max 6)
+                // Render combined list
                 listEl.innerHTML = '';
-                if(notis.length===0){
+
+                // Agregar mensajes de soporte primero
+                if(unreadMensajes > 0 || mensajesData.hasNewMessages){
+                    const msjItem = document.createElement('div');
+                    msjItem.className = 'dropdown-item d-flex justify-content-between align-items-start';
+                    msjItem.style.cursor = 'pointer';
+                    msjItem.innerHTML = `
+                        <div class="me-2">
+                            <strong style="font-size:0.95rem">
+                                <i class="bi bi-chat-dots text-success me-1"></i>Mensajes de Soporte
+                            </strong>
+                            <div class="small text-muted">Tienes mensajes nuevos</div>
+                        </div>
+                        ${unreadMensajes > 0 ? '<span class="badge bg-success rounded-pill">' + unreadMensajes + '</span>' : ''}
+                    `;
+                    msjItem.addEventListener('click', () => {
+                        window.location.href = API_MSJ;
+                    });
+                    listEl.appendChild(msjItem);
+                    const hr = document.createElement('div'); hr.innerHTML='<hr class="dropdown-divider">'; listEl.appendChild(hr);
+                }
+
+                // Agregar notificaciones normales
+                if(notis.length === 0 && unreadMensajes === 0){
                     listEl.innerHTML = '<div class="dropdown-item-text text-muted small">No hay notificaciones</div>';
                     return;
                 }
-                notis.slice(0,6).forEach(n=>{
+
+                notis.slice(0,5).forEach(n => {
                     const li = document.createElement('div');
                     li.className = 'dropdown-item d-flex justify-content-between align-items-start';
                     li.style.cursor = 'pointer';
@@ -143,23 +263,25 @@
                         li.querySelector('div').appendChild(dot);
                     }
                     li.addEventListener('click', async (e)=>{
-                        // marcar como leida
                         try{
-                            await fetch(LEER(n.id), { method: 'POST', credentials: 'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'} });
+                            await fetch(LEER_NOTI(n.id), { method: 'POST', credentials: 'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'} });
                         }catch(err){ console.warn('No se pudo marcar leída', err); }
-                        // opcional: redirigir si hay url
                         if(n.url) window.location.href = n.url;
-                        fetchNotis();
+                        fetchNotificaciones();
                     });
                     listEl.appendChild(li);
                     const hr = document.createElement('div'); hr.innerHTML='<hr class="dropdown-divider">'; listEl.appendChild(hr);
                 });
-            }catch(err){ console.warn('Error cargando notis', err); }
+
+            }catch(err){
+                console.error('Error cargando notificaciones:', err);
+                listEl.innerHTML = '<div class="dropdown-item-text text-danger small">Error cargando notificaciones</div>';
+            }
         }
 
         // Inicial y cada 10s
-        fetchNotis();
-        setInterval(fetchNotis, 10000);
+        fetchNotificaciones();
+        setInterval(fetchNotificaciones, 10000);
     });
     </script>
             <i class="bi bi-phone me-2"></i>JDNS COMUNICACIONES
@@ -180,10 +302,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('carrito.ver_carrito') }}"><span class="me-1">🛒</span>Carrito</a>
                 </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('mensaje_soporte.mensajes_soporte') }}">
+                        <span class="me-1">💬</span>Mensajes
+                    </a>
+                </li>
+                {% endif %}
             </ul>
             
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
+            
                 <!-- Notificaciones (dropdown) -->
                 <div class="nav-item dropdown me-2">
                     <a class="nav-link dropdown-toggle position-relative text-white" href="#" id="clientNotiDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -312,11 +440,17 @@
                                             <p class="card-text">Precio: <span class="fw-bold text-success">${{ producto.precio_unitario|default(0)|float|round(0, 'floor')|string }}</span></p>
                                             <p class="card-text">Cantidad: {{ item.cantidad }}</p>
                                             <p class="card-text">Subtotal: <span class="fw-bold text-success">${{ (producto.precio_unitario|default(0)|float * item.cantidad)|round(0, 'floor')|string }}</span></p>
-                                            <form action="{{ url_for('carrito.reducir_cantidad', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
-                                                <button type="submit" class="btn btn-warning btn-sm">⬇ Disminuir</button>
-                                            </form>
+                                            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                                <form action="{{ url_for('carrito.reducir_cantidad', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-outline-secondary btn-sm px-3">-</button>
+                                                </form>
+                                                <span class="fw-bold">{{ item.cantidad }}</span>
+                                                <form action="{{ url_for('carrito.aumentar_cantidad', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-outline-secondary btn-sm px-3">+</button>
+                                                </form>
+                                            </div>
                                             <form action="{{ url_for('carrito.eliminar_del_carrito', carrito_id=item.idcarrito) }}" method="POST" style="display:inline;">
-                                                <button type="submit" class="btn btn-danger btn-sm">❌ Eliminar</button>
+                                                <button type="submit" class="btn btn-danger btn-sm w-100">❌ Eliminar</button>
                                             </form>
                                         </div>
                                     </div>
@@ -344,6 +478,27 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <script>
+    // Función de búsqueda para productos
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.querySelector('input[type="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const term = searchInput.value.toLowerCase();
+                document.querySelectorAll('.card').forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const description = card.querySelector('.card-text') ? card.querySelector('.card-text').textContent.toLowerCase() : '';
+                    if (title.includes(term) || description.includes(term)) {
+                        card.parentElement.style.display = 'block';
+                    } else {
+                        card.parentElement.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+    </script>
+
 </body>
 </html>
