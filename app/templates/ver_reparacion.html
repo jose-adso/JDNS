@@ -23,8 +23,8 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-lg-8 mb-4">
-      <div class="card mb-4">
+    <div class="col-lg-3 mb-4">
+      <div class="card h-100">
         <div class="card-header">Información General</div>
         <div class="card-body">
           <p><strong>Fecha Ingreso:</strong> {{ reparacion.fecha_ingreso.strftime('%d/%m/%Y %H:%M') }}</p>
@@ -43,15 +43,9 @@
           <p><strong>Fecha Entrega:</strong> {{ reparacion.fecha_entrega and reparacion.fecha_entrega.strftime('%d/%m/%Y %H:%M') or 'Pendiente' }}</p>
         </div>
       </div>
-      <div class="card">
-        <div class="card-header">Descripción del Problema</div>
-        <div class="card-body">
-          <p>{{ reparacion.problema_reparacion }}</p>
-        </div>
-      </div>
     </div>
-    <div class="col-lg-4">
-      <div class="card mb-4">
+    <div class="col-lg-3 mb-4">
+      <div class="card h-100">
         <div class="card-header">Cliente</div>
         <div class="card-body">
           {% if reparacion.usuario %}
@@ -63,7 +57,9 @@
           {% endif %}
         </div>
       </div>
-      <div class="card">
+    </div>
+    <div class="col-lg-3 mb-4">
+      <div class="card h-100">
         <div class="card-header">Dispositivo</div>
         <div class="card-body">
           {% if reparacion.dispositivo %}
@@ -75,6 +71,14 @@
           {% else %}
             <p class="text-muted">No disponible</p>
           {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 mb-4">
+      <div class="card h-100">
+        <div class="card-header">Descripción del Problema</div>
+        <div class="card-body">
+          <p>{{ reparacion.problema_reparacion }}</p>
         </div>
       </div>
     </div>

@@ -3,8 +3,15 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.users import Users
 from sqlalchemy import func
+import smtplib
+import ssl
+import random
+import string
+import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-from app import db  
+from app import db
 
 bp = Blueprint('auth', __name__)
 
@@ -21,6 +28,12 @@ def login():
                 print("¡Contraseña correcta!")
                 login_user(user)
                 flash("¡Inicio de sesión exitoso!", "success")
+                # Verificar si necesita cambiar contraseña
+                from flask import session
+                if session.get('reset_user_id') == user.idusuario:
+                    session.pop('reset_user_id', None)
+                    temp_pass = session.pop('temp_password', None)
+                    return redirect(url_for('auth.change_password'))
                 return redirect(url_for('auth.dashboard'))
             else:
                 print("La contraseña no coincide.")
@@ -136,6 +149,95 @@ def register_admin():
 
 
 
+
+@bp.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        correo = request.form['correo'].strip()
+        user = Users.query.filter_by(correo=correo).first()
+        if not user:
+            flash('Correo no encontrado.', 'danger')
+            return redirect(url_for('auth.reset_password'))
+
+        # Generar nueva contraseña temporal
+        temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        hashed_temp = generate_password_hash(temp_password)
+        user.password = hashed_temp
+        db.session.commit()
+
+        # Almacenar en session para el cambio
+        from flask import session
+        session['reset_user_id'] = user.idusuario
+        session['temp_password'] = temp_password
+
+        # Enviar email
+        try:
+            smtp_server = "smtp.gmail.com"
+            port = 587
+            sender_email = "joserojas201890@gmail.com"
+            password = os.environ.get('GMAIL_APP_PASSWORD', 'ccnctaiecoeeuxae')
+
+            print(f"Enviando email a: {correo}")
+            print(f"Usando servidor: {smtp_server}:{port}")
+            print(f"Remitente: {sender_email}")
+
+            with smtplib.SMTP(smtp_server, 587) as server:
+                print("Conectando a servidor SMTP...")
+                server.starttls()
+                server.login(sender_email, password)
+                print("Login exitoso")
+                msg = MIMEMultipart()
+                msg['From'] = sender_email
+                msg['To'] = correo
+                msg['Subject'] = 'Contraseña Temporal - JDNS Comunicaciones'
+
+                body = f"""Hola {user.nombre},
+
+Tu contraseña temporal es: {temp_password}
+
+Por favor, inicia sesión con esta contraseña y cámbiala inmediatamente por una nueva.
+
+Saludos,
+Equipo de JDNS Comunicaciones
+"""
+                msg.attach(MIMEText(body, 'plain'))
+
+                server.sendmail(sender_email, correo, msg.as_string())
+                print("Email enviado exitosamente")
+
+            flash('Contraseña temporal enviada a tu correo. Inicia sesión y cambia tu contraseña.', 'success')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            print(f"Error enviando email: {e}")
+            # Fallback: mostrar la contraseña en flash
+            flash(f'Error enviando email. Tu contraseña temporal es: {temp_password}. Inicia sesión y cambia tu contraseña.', 'warning')
+            return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html')
+
+@bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            flash('Las nuevas contraseñas no coinciden.', 'danger')
+            return redirect(url_for('auth.change_password'))
+
+        if len(new_password) < 6:
+            flash('La contraseña debe tener al menos 6 caracteres.', 'danger')
+            return redirect(url_for('auth.change_password'))
+
+        hashed_password = generate_password_hash(new_password)
+        current_user.password = hashed_password
+        db.session.commit()
+
+        flash('Contraseña cambiada exitosamente.', 'success')
+        return redirect(url_for('auth.dashboard'))
+
+    return render_template('change_password.html')
 
 @bp.route('/usuarios')
 @login_required

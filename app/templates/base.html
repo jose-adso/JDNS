@@ -44,6 +44,18 @@
                     </li>
                     {% endif %}
                     {% if current_user.is_authenticated %}
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="{{ url_for('notificaciones.notificaciones') }}">
+                                <i class="bi bi-bell"></i> Notificaciones
+                                <span id="notification-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="display: none;">!</span>
+                            </a>
+                        </li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="{{ url_for('mensaje_soporte.mensajes_soporte') }}">
+                                <i class="bi bi-chat-dots"></i> Mensajes
+                                <span id="message-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="display: none;">!</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">
                                 <i class="bi bi-box-arrow-right"></i> Salir
@@ -77,6 +89,108 @@
     </footer>
 
     
+    <script>
+        console.log('Base template loaded');
+        console.log('Viewport meta present:', document.querySelector('meta[name="viewport"]'));
+        console.log('CSS loaded:', document.styleSheets.length);
+
+        // Función para reproducir sonido de notificación
+        function playNotificationSound() {
+            const audio = new Audio('/static/public/new-notification-3-398649.mp3');
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+
+        // Variables para trackear conteos anteriores
+        let prevNotifCount = 0;
+        let prevMsgCount = 0;
+
+        // Función para actualizar badges de notificaciones y mensajes
+        async function updateBadges() {
+            try {
+                const [notifRes, msgRes] = await Promise.all([
+                    fetch('{{ url_for("notificaciones.count_unread") }}'),
+                    fetch('{{ url_for("mensaje_soporte.count_unread") }}')
+                ]);
+                const notifData = await notifRes.json();
+                const msgData = await msgRes.json();
+
+                const notifBadge = document.getElementById('notification-badge');
+                const msgBadge = document.getElementById('message-badge');
+
+                // Reproducir sonido si hay nuevos
+                if (notifData.count > prevNotifCount) {
+                    playNotificationSound();
+                }
+                if (msgData.count > prevMsgCount) {
+                    playNotificationSound();
+                }
+
+                if (notifBadge) {
+                    notifBadge.style.display = notifData.count > 0 ? 'block' : 'none';
+                    notifBadge.textContent = notifData.count > 99 ? '99+' : notifData.count;
+                }
+                if (msgBadge) {
+                    msgBadge.style.display = msgData.count > 0 ? 'block' : 'none';
+                    msgBadge.textContent = msgData.count > 99 ? '99+' : msgData.count;
+                }
+
+                prevNotifCount = notifData.count;
+                prevMsgCount = msgData.count;
+            } catch (e) {
+                console.warn('Error updating badges', e);
+            }
+        }
+
+        // Actualizar badges al cargar la página
+        updateBadges();
+
+        // Actualizar badges cada 30 segundos
+        setInterval(updateBadges, 30000);
+
+        // Marcar como leídas al presionar el enlace de notificaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationLink = document.querySelector('a[href*="notificaciones"]');
+            if (notificationLink) {
+                notificationLink.addEventListener('click', async function() {
+                    // Marcar todas las notificaciones como leídas
+                    try {
+                        const response = await fetch('/notificaciones/api');
+                        if (response.ok) {
+                            const data = await response.json();
+                            for (const noti of data) {
+                                if (!noti.leida) {
+                                    await fetch(`/notificaciones/leer/${noti.id}`, { method: 'POST' });
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Error marking notifications as read', e);
+                    }
+                    // Ocultar badge
+                    const badge = document.getElementById('notification-badge');
+                    if (badge) badge.style.display = 'none';
+                });
+            }
+            const messageLink = document.querySelector('a[href*="mensaje_soporte"]');
+            if (messageLink) {
+                messageLink.addEventListener('click', async function() {
+                    // Marcar todos los mensajes como leídos
+                    try {
+                        const response = await fetch('/mensaje_soporte/count_unread');
+                        if (response.ok) {
+                            // Como no hay API para listar mensajes, marcar individualmente si es necesario
+                            // Por simplicidad, solo ocultar badge
+                        }
+                    } catch (e) {
+                        console.warn('Error marking messages as read', e);
+                    }
+                    // Ocultar badge
+                    const badge = document.getElementById('message-badge');
+                    if (badge) badge.style.display = 'none';
+                });
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-12">
         <!-- Información del Dispositivo -->
-        <div class="card shadow-sm mb-4">
+        <div class="card mb-2 shadow-custom">
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="card-title mb-0">
@@ -19,31 +19,35 @@
                     </a>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="text-center">
-                            <i class="fas fa-mobile-alt fa-3x text-primary mb-2"></i>
-                            <h4 class="text-primary">{{ dispositivo.marca }}</h4>
-                            <p class="text-muted mb-0">IMEI: {{ dispositivo.imei }}</p>
+                    <div class="col-md-6">
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <i class="fas fa-mobile-alt fa-3x text-primary mb-2"></i>
+                                <h4 class="text-primary">{{ dispositivo.marca }}</h4>
+                                <p class="text-muted mb-0">IMEI: {{ dispositivo.imei }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="info-box p-1 bg-light rounded text-center">
+                                <h5 class="text-success mb-1">{{ total_reparaciones }}</h5>
+                                <small class="text-muted">Total Reparaciones</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="info-box p-3 bg-light rounded text-center">
-                            <h5 class="text-success mb-1">{{ total_reparaciones }}</h5>
-                            <small class="text-muted">Total Reparaciones</small>
+                    <div class="col-md-6">
+                        <div class="col-md-2">
+                            <div class="info-box p-1 bg-light rounded text-center">
+                                <h5 class="text-info mb-1">${{ costo_total }}</h5>
+                                <small class="text-muted">Costo Total</small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="info-box p-3 bg-light rounded text-center">
-                            <h5 class="text-info mb-1">${{ costo_total }}</h5>
-                            <small class="text-muted">Costo Total</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="info-box p-3 bg-light rounded text-center">
-                            <h5 class="text-warning mb-1">{{ todos_historiales|length }}</h5>
-                            <small class="text-muted">Registros de Historial</small>
+                        <div class="col-md-2">
+                            <div class="info-box p-1 bg-light rounded text-center">
+                                <h5 class="text-warning mb-1">{{ todos_historiales|length }}</h5>
+                                <small class="text-muted">Registros de Historial</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -52,16 +56,16 @@
 
         <!-- Lista Completa de Todas las Reparaciones -->
         {% if reparaciones %}
-        <div class="card shadow-sm mb-4">
+        <div class="card mb-2 shadow-custom">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">
                     <i class="fas fa-tools me-2"></i>
                     Lista Completa de Todas las Reparaciones ({{ reparaciones|length }})
                 </h4>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
                 {% for reparacion in reparaciones %}
-                <div class="reparacion-card mb-4 p-3 border rounded">
+                <div class="reparacion-card mb-2 p-1 border rounded">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <h5 class="text-success mb-1">
@@ -180,17 +184,17 @@
 
         <!-- Historial Cronológico Completo -->
         {% if todos_historiales %}
-        <div class="card shadow-sm">
+        <div class="card mb-2 shadow-custom">
             <div class="card-header bg-info text-white">
                 <h4 class="mb-0">
                     <i class="fas fa-history me-2"></i>
                     Historial Cronológico Completo
                 </h4>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
                 <div class="timeline">
                     {% for item in todos_historiales %}
-                    <div class="timeline-item mb-3">
+                    <div class="timeline-item mb-2">
                         <div class="timeline-marker bg-primary"></div>
                         <div class="timeline-content">
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -275,9 +279,26 @@
 
 .timeline-content {
     background: #f8f9fa;
-    padding: 15px;
+    padding: 10px;
     border-radius: 5px;
     border-left: 3px solid #007bff;
+}
+
+.card {
+    height: auto;
+    overflow: hidden;
+}
+
+.card-body {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.reparacion-card {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
 }
 </style>
 {% endblock %}

@@ -84,11 +84,11 @@
                       </td>
                       <td>
                         <a href="{{ url_for('reparacion.ver_reparacion', reparacion_id=reparacion.idreparacion) }}" class="btn btn-sm btn-outline-info">
-                          <i class="fas fa-eye"></i>
+                          <i class="fas fa-eye me-1"></i>Ver
                         </a>
                         {% if current_user.rol in ['admin', 'tecnico'] %}
-                          <a href="{{ url_for('reparacion.editar_reparacion', reparacion_id=reparacion.idreparacion) }}" class="btn btn-sm btn-outline-warning">
-                            <i class="fas fa-edit"></i>
+                          <a href="{{ url_for('reparacion.editar_reparacion', reparacion_id=reparacion.idreparacion) }}" class="btn btn-sm btn-outline-warning ms-1">
+                            <i class="fas fa-edit me-1"></i>Editar
                           </a>
                         {% endif %}
                       </td>

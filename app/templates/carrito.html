@@ -61,7 +61,32 @@
                         <option value="tarjeta">Tarjeta</option>
                         <option value="efectivo">Efectivo</option>
                         <option value="transferencia">Transferencia</option>
+                        <option value="mixto">Pago Mixto</option>
                     </select>
+                </div>
+                <div id="pago_mixto_fields" style="display: none;">
+                    <h5>Montos por Método</h5>
+                    <div class="mb-3">
+                        <label for="monto_efectivo" class="form-label">Efectivo</label>
+                        <input type="number" class="form-control monto-input" id="monto_efectivo" name="monto_efectivo" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto_tarjeta" class="form-label">Tarjeta</label>
+                        <input type="number" class="form-control monto-input" id="monto_tarjeta" name="monto_tarjeta" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto_transferencia" class="form-label">Transferencia</label>
+                        <input type="number" class="form-control monto-input" id="monto_transferencia" name="monto_transferencia" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto_otro" class="form-label">Otro</label>
+                        <input type="number" class="form-control monto-input" id="monto_otro" name="monto_otro" step="0.01" min="0" value="0">
+                        <input type="text" class="form-control mt-2" id="descripcion_otro" name="descripcion_otro" placeholder="Descripción del otro método">
+                    </div>
+                    <div class="mb-3">
+                        <strong>Total Pagado: <span id="total_pagado">0.00</span></strong><br>
+                        <strong>Resto a Pagar: <span id="resto_pagar">{{ '{:.2f}'.format(total) }}</span></strong>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="referencia_pago" class="form-label">Referencia de Pago</label>
@@ -95,6 +120,34 @@
             const items = document.querySelectorAll('#carrito-table tbody tr');
             let total = parseFloat(document.getElementById('total-input').value);
 
+            // Manejar cambio de método de pago
+            document.getElementById('metodo_pago').addEventListener('change', function() {
+                const pagoMixtoFields = document.getElementById('pago_mixto_fields');
+                if (this.value === 'mixto') {
+                    pagoMixtoFields.style.display = 'block';
+                    updatePagoMixto();
+                } else {
+                    pagoMixtoFields.style.display = 'none';
+                }
+            });
+
+            // Manejar cambios en montos de pago mixto
+            document.querySelectorAll('.monto-input').forEach(input => {
+                input.addEventListener('input', updatePagoMixto);
+            });
+
+            function updatePagoMixto() {
+                const efectivo = parseFloat(document.getElementById('monto_efectivo').value) || 0;
+                const tarjeta = parseFloat(document.getElementById('monto_tarjeta').value) || 0;
+                const transferencia = parseFloat(document.getElementById('monto_transferencia').value) || 0;
+                const otro = parseFloat(document.getElementById('monto_otro').value) || 0;
+                const totalPagado = efectivo + tarjeta + transferencia + otro;
+                const resto = total - totalPagado;
+
+                document.getElementById('total_pagado').textContent = totalPagado.toFixed(2);
+                document.getElementById('resto_pagar').textContent = resto.toFixed(2);
+            }
+
             items.forEach(item => {
                 const itemId = item.getAttribute('data-item-id');
                 const qtyElement = document.getElementById(`qty-${itemId}`);
@@ -111,6 +164,7 @@
                     subtotalElement.textContent = `$${newSubtotal.toFixed(2)}`;
                     updateTotal();
                     updateHiddenInputs();
+                    updatePagoMixto();
                 });
 
                 decreaseBtn.addEventListener('click', function() {
@@ -122,6 +176,7 @@
                         subtotalElement.textContent = `$${newSubtotal.toFixed(2)}`;
                         updateTotal();
                         updateHiddenInputs();
+                        updatePagoMixto();
                     }
                 });
             });
@@ -133,6 +188,8 @@
                 });
                 document.getElementById('total-display').textContent = `$${newTotal.toFixed(2)}`;
                 document.getElementById('total-input').value = newTotal.toFixed(2);
+                total = newTotal;
+                updatePagoMixto();
             }
 
             function updateHiddenInputs() {

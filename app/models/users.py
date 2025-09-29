@@ -188,5 +188,18 @@ class AdjuntoReparacion(db.Model):
     
 
 
+class MetodoPagoMixto(db.Model):
+    __tablename__ = 'metodo_pago_mixto'
+    id = db.Column(db.Integer, primary_key=True)
+    venta_factura_id = db.Column(db.Integer, db.ForeignKey('ventas_factura.idventas_factura'))
+    efectivo = db.Column(db.Numeric(10, 2), default=0)
+    tarjeta = db.Column(db.Numeric(10, 2), default=0)
+    transferencia = db.Column(db.Numeric(10, 2), default=0)
+    otro = db.Column(db.Numeric(10, 2), default=0)
+    descripcion_otro = db.Column(db.String(100))
+    total_pagado = db.Column(db.Numeric(10, 2))
+    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+
+    venta = db.relationship('VentaFactura', backref='pago_mixto')
    
    

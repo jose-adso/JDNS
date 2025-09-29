@@ -15,86 +15,93 @@
                 </a>
             </div>
 
-            <!-- Mensajes Recibidos -->
-            <div class="card mb-4 shadow-custom">
-                <div class="card-header bg-primary-custom text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-inbox me-2"></i>Mensajes Recibidos
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if mensajes_recibidos %}
-                        <div class="list-group list-group-flush">
-                            {% for mensaje in mensajes_recibidos %}
-                                <div class="list-group-item d-flex justify-content-between align-items-start {% if not mensaje.leido %}mensaje-no-leido{% else %}mensaje-leido{% endif %}">
-                                    <div class="ms-2 me-auto">
-                                        <div class="fw-bold">
-                                            {% if mensaje.leido %}
-                                                <i class="bi bi-envelope-open text-muted me-2"></i>
-                                            {% else %}
-                                                <i class="bi bi-envelope-fill text-primary-custom me-2"></i>
-                                            {% endif %}
-                                            {{ mensaje.asunto }}
+            <!-- Mensajes en Columnas -->
+            <div class="row">
+                <!-- Mensajes Enviados - Izquierda -->
+                <div class="col-6">
+                    <div class="card mb-2 shadow-custom">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-send me-2"></i>Mensajes Enviados
+                            </h5>
+                        </div>
+                        <div class="card-body p-1">
+                            {% if mensajes_enviados %}
+                                <div class="list-group list-group-flush">
+                                    {% for mensaje in mensajes_enviados %}
+                                        <div class="list-group-item mensaje-leido">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="ms-2 me-auto">
+                                                    <div class="fw-bold">
+                                                        <i class="bi bi-send-fill text-success me-2"></i>
+                                                        {{ mensaje.asunto }}
+                                                    </div>
+                                                    <div class="text-muted small">
+                                                        Para: {{ usuarios.get(mensaje.receptor_id, 'Usuario desconocido') }} |
+                                                        {{ mensaje.fecha_envio.strftime('%d/%m/%Y %H:%M') }}
+                                                    </div>
+                                                    <div class="mt-2">{{ mensaje.mensaje }}</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="text-muted small">
-                                            De: {{ usuarios.get(mensaje.emisor_id, 'Usuario desconocido') }} |
-                                            {{ mensaje.fecha_envio.strftime('%d/%m/%Y %H:%M') }}
-                                        </div>
-                                        <div class="mt-2">{{ mensaje.mensaje }}</div>
-                                    </div>
-                                    {% if not mensaje.leido %}
-                                        <form action="{{ url_for('mensaje_soporte.marcar_leido', id=mensaje.idmensaje_soporte) }}" method="POST" class="ms-2">
-                                            <button type="submit" class="btn btn-sm btn-outline-primary-custom">
-                                                <i class="bi bi-check2"></i> Marcar como leído
-                                            </button>
-                                        </form>
-                                    {% endif %}
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted py-2">
+                                    <i class="bi bi-send display-4 mb-3 text-secondary"></i>
+                                    <p>No has enviado mensajes.</p>
+                                </div>
+                            {% endif %}
                         </div>
-                    {% else %}
-                        <div class="text-center text-muted py-4">
-                            <i class="bi bi-inbox display-4 mb-3 text-primary-custom"></i>
-                            <p>No tienes mensajes recibidos.</p>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
 
-            <!-- Mensajes Enviados -->
-            <div class="card shadow-custom">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-send me-2"></i>Mensajes Enviados
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if mensajes_enviados %}
-                        <div class="list-group list-group-flush">
-                            {% for mensaje in mensajes_enviados %}
-                                <div class="list-group-item mensaje-leido">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="ms-2 me-auto">
-                                            <div class="fw-bold">
-                                                <i class="bi bi-send-fill text-success me-2"></i>
-                                                {{ mensaje.asunto }}
+                <!-- Mensajes Recibidos - Derecha -->
+                <div class="col-6">
+                    <div class="card mb-2 shadow-custom">
+                        <div class="card-header bg-primary-custom text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-inbox me-2"></i>Mensajes Recibidos
+                            </h5>
+                        </div>
+                        <div class="card-body p-1">
+                            {% if mensajes_recibidos %}
+                                <div class="list-group list-group-flush">
+                                    {% for mensaje in mensajes_recibidos %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-start {% if not mensaje.leido %}mensaje-no-leido{% else %}mensaje-leido{% endif %}">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">
+                                                    {% if mensaje.leido %}
+                                                        <i class="bi bi-envelope-open text-muted me-2"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-envelope-fill text-primary-custom me-2"></i>
+                                                    {% endif %}
+                                                    {{ mensaje.asunto }}
+                                                </div>
+                                                <div class="text-muted small">
+                                                    De: {{ usuarios.get(mensaje.emisor_id, 'Usuario desconocido') }} |
+                                                    {{ mensaje.fecha_envio.strftime('%d/%m/%Y %H:%M') }}
+                                                </div>
+                                                <div class="mt-2">{{ mensaje.mensaje }}</div>
                                             </div>
-                                            <div class="text-muted small">
-                                                Para: {{ usuarios.get(mensaje.receptor_id, 'Usuario desconocido') }} |
-                                                {{ mensaje.fecha_envio.strftime('%d/%m/%Y %H:%M') }}
-                                            </div>
-                                            <div class="mt-2">{{ mensaje.mensaje }}</div>
+                                            {% if not mensaje.leido %}
+                                                <form action="{{ url_for('mensaje_soporte.marcar_leido', id=mensaje.idmensaje_soporte) }}" method="POST" class="ms-2">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary-custom">
+                                                        <i class="bi bi-check2"></i> Marcar como leído
+                                                    </button>
+                                                </form>
+                                            {% endif %}
                                         </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted py-2">
+                                    <i class="bi bi-inbox display-4 mb-3 text-primary-custom"></i>
+                                    <p>No tienes mensajes recibidos.</p>
+                                </div>
+                            {% endif %}
                         </div>
-                    {% else %}
-                        <div class="text-center text-muted py-4">
-                            <i class="bi bi-send display-4 mb-3 text-secondary"></i>
-                            <p>No has enviado mensajes.</p>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
 
@@ -105,5 +112,45 @@
             </div>
         </div>
     </div>
+<style>
+.message-bubble {
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+    // Función para actualizar el badge del navbar
+    async function updateNavbarBadge() {
+        try {
+            const response = await fetch('{{ url_for("mensaje_soporte.count_unread") }}');
+            if (response.ok) {
+                const data = await response.json();
+                const badge = document.getElementById('message-badge');
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.style.display = 'block';
+                        badge.textContent = data.count > 99 ? '99+' : data.count;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Error updating navbar badge', e);
+        }
+    }
+
+    // Actualizar badge después de marcar como leído
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[action*="/marcar_leido"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                // Esperar un poco para que el POST se complete
+                setTimeout(updateNavbarBadge, 500);
+            });
+        });
+    });
+</script>
 </div>
 {% endblock %}

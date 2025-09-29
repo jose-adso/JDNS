@@ -14,7 +14,7 @@
             <div>
                 <a class="btn btn-secondary me-2" href="{{ url_for('auth.dashboard') }}"><i class="bi bi-house-door"></i> Volver</a>
                 {% if current_user.is_authenticated and current_user.rol == 'admin' %}
-                <a class="btn btn-primary" href="{{ url_for('notificaciones.nueva_notificacion') }}"><i class="bi bi-plus-circle"></i> Crear</a>
+                
                 {% endif %}
             </div>
         </div>
@@ -46,6 +46,27 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Función para actualizar el badge del navbar
+        async function updateNavbarBadge() {
+            try {
+                const response = await fetch('{{ url_for("notificaciones.count_unread") }}');
+                if (response.ok) {
+                    const data = await response.json();
+                    const badge = document.getElementById('notification-badge');
+                    if (badge) {
+                        if (data.count > 0) {
+                            badge.style.display = 'block';
+                            badge.textContent = data.count > 99 ? '99+' : data.count;
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Error updating navbar badge', e);
+            }
+        }
+
         // Al cargar, marcar como leídas todas las notificaciones mostradas que no estén leídas
         document.addEventListener('DOMContentLoaded', function(){
             const botones = document.querySelectorAll('.marcar-leida');
@@ -60,6 +81,8 @@
                         btn.closest('.list-group-item').querySelector('.badge').classList.remove('bg-danger');
                         btn.closest('.list-group-item').querySelector('.badge').classList.add('bg-secondary');
                         btn.remove();
+                        // actualizar badge del navbar inmediatamente
+                        updateNavbarBadge();
                     }catch(e){ console.warn('Error marcando leída', e); }
                 });
             });
@@ -75,6 +98,8 @@
                         btn.remove();
                     }catch(e){ /* ignore individual errors */ }
                 }
+                // actualizar badge del navbar después de marcar todas
+                updateNavbarBadge();
             })();
         });
     </script>

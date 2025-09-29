@@ -91,3 +91,24 @@ def marcar_leido(id):
         db.session.commit()
         flash('Mensaje marcado como leído.', 'success')
     return redirect(url_for('mensaje_soporte.mensajes_soporte'))
+
+
+@bp.route('/count_unread')
+@login_required
+def count_unread():
+    # Contar mensajes no leídos para el usuario actual
+    if current_user.rol == 'admin':
+        count = MensajeSoporte.query.filter_by(receptor_id=current_user.idusuario, leido=False).count()
+    elif current_user.rol == 'tecnico':
+        count = MensajeSoporte.query.filter(
+            MensajeSoporte.receptor_id == current_user.idusuario,
+            MensajeSoporte.leido == False,
+            MensajeSoporte.emisor_id.in_(db.session.query(Users.idusuario).filter(Users.rol.in_(['cliente', 'admin'])))
+        ).count()
+    else:  # cliente
+        count = MensajeSoporte.query.filter(
+            MensajeSoporte.receptor_id == current_user.idusuario,
+            MensajeSoporte.leido == False,
+            MensajeSoporte.emisor_id.in_(db.session.query(Users.idusuario).filter(Users.rol.in_(['tecnico', 'admin'])))
+        ).count()
+    return jsonify({'count': count})

@@ -71,4 +71,15 @@ def marcar_leida(id):
     return jsonify({'ok': True})
 
 
+@bp.route('/count_unread')
+@login_required
+def count_unread():
+    # Contar notificaciones no leídas para el usuario actual
+    if getattr(current_user, 'rol', None) == 'admin':
+        count = Notificacion.query.filter_by(leida=False).count()
+    else:
+        count = Notificacion.query.filter_by(usuario_idusuario=current_user.idusuario, leida=False).count()
+    return jsonify({'count': count})
+
+
 

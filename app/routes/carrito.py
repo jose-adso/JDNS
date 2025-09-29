@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
-from app.models.users import Carrito, Producto, Pago, VentaFactura
+from app.models.users import Carrito, Producto, Pago, VentaFactura, MetodoPagoMixto
 from flask_login import current_user
 from datetime import datetime
 
@@ -89,23 +89,107 @@ def realizar_pago():
         carritos = Carrito.query.filter_by(usuario_idusuario=current_user.idusuario).all()
         if carritos:
             total = sum(item.cantidad * Producto.query.get(item.producto_idproducto).precio_unitario for item in carritos)
+            metodo_pago = request.form.get('metodo_pago')
+
             nueva_factura = VentaFactura(usuario_idusuario=current_user.idusuario, total=total)
             db.session.add(nueva_factura)
             db.session.flush()
-            for item in carritos:
-                nuevo_pago = Pago(
-                    fecha_pago=datetime.utcnow(),
-                    monto=Producto.query.get(item.producto_idproducto).precio_unitario * item.cantidad,
-                    metodo_pago='efectivo',
-                    estado_pago='pendiente',
-                    proveedor_pago='Proveedor Genérico',
-                    token_transaccion='TOKEN_' + str(nueva_factura.idventas_factura),
-                    ventas_factura_idventas_factura=nueva_factura.idventas_factura
+
+            if metodo_pago == 'mixto':
+                # Procesar pago mixto
+                monto_efectivo = float(request.form.get('monto_efectivo', 0))
+                monto_tarjeta = float(request.form.get('monto_tarjeta', 0))
+                monto_transferencia = float(request.form.get('monto_transferencia', 0))
+                monto_otro = float(request.form.get('monto_otro', 0))
+                descripcion_otro = request.form.get('descripcion_otro', '')
+
+                total_pagado = monto_efectivo + monto_tarjeta + monto_transferencia + monto_otro
+
+                if abs(total_pagado - total) > 0.01:
+                    flash('Los montos de pago mixto no coinciden con el total.', 'error')
+                    db.session.rollback()
+                    return redirect(url_for('carrito.ver_carrito'))
+
+                # Crear pagos individuales
+                pagos_creados = []
+                if monto_efectivo > 0:
+                    pago = Pago(
+                        fecha_pago=datetime.utcnow(),
+                        monto=monto_efectivo,
+                        metodo_pago='efectivo',
+                        estado_pago='completado',
+                        ventas_factura_idventas_factura=nueva_factura.idventas_factura
+                    )
+                    db.session.add(pago)
+                    pagos_creados.append(pago)
+
+                if monto_tarjeta > 0:
+                    pago = Pago(
+                        fecha_pago=datetime.utcnow(),
+                        monto=monto_tarjeta,
+                        metodo_pago='tarjeta',
+                        estado_pago='completado',
+                        ventas_factura_idventas_factura=nueva_factura.idventas_factura
+                    )
+                    db.session.add(pago)
+                    pagos_creados.append(pago)
+
+                if monto_transferencia > 0:
+                    pago = Pago(
+                        fecha_pago=datetime.utcnow(),
+                        monto=monto_transferencia,
+                        metodo_pago='transferencia',
+                        estado_pago='completado',
+                        ventas_factura_idventas_factura=nueva_factura.idventas_factura
+                    )
+                    db.session.add(pago)
+                    pagos_creados.append(pago)
+
+                if monto_otro > 0:
+                    pago = Pago(
+                        fecha_pago=datetime.utcnow(),
+                        monto=monto_otro,
+                        metodo_pago='otro',
+                        estado_pago='completado',
+                        ventas_factura_idventas_factura=nueva_factura.idventas_factura
+                    )
+                    db.session.add(pago)
+                    pagos_creados.append(pago)
+
+                # Crear registro de pago mixto
+                pago_mixto = MetodoPagoMixto(
+                    venta_factura_id=nueva_factura.idventas_factura,
+                    efectivo=monto_efectivo,
+                    tarjeta=monto_tarjeta,
+                    transferencia=monto_transferencia,
+                    otro=monto_otro,
+                    descripcion_otro=descripcion_otro if monto_otro > 0 else None,
+                    total_pagado=total_pagado
                 )
-                db.session.add(nuevo_pago)
+                db.session.add(pago_mixto)
+
+                nueva_factura.estado_envio = 'pagado'
+
+            else:
+                # Pago único (como antes)
+                for item in carritos:
+                    nuevo_pago = Pago(
+                        fecha_pago=datetime.utcnow(),
+                        monto=Producto.query.get(item.producto_idproducto).precio_unitario * item.cantidad,
+                        metodo_pago=metodo_pago,
+                        estado_pago='pendiente',
+                        proveedor_pago='Proveedor Genérico',
+                        token_transaccion='TOKEN_' + str(nueva_factura.idventas_factura),
+                        ventas_factura_idventas_factura=nueva_factura.idventas_factura
+                    )
+                    db.session.add(nuevo_pago)
+
+            # Limpiar carrito
+            for item in carritos:
                 db.session.delete(item)
+
             db.session.commit()
-            flash('Pago iniciado con éxito!', 'success')
+            flash('Pago procesado con éxito!', 'success')
         else:
             flash('El carrito está vacío.', 'error')
     return redirect(url_for('carrito.ver_carrito'))
