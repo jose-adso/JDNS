@@ -81,5 +81,23 @@ def count_unread():
         count = Notificacion.query.filter_by(usuario_idusuario=current_user.idusuario, leida=False).count()
     return jsonify({'count': count})
 
+@bp.route('/marcar_todas_leidas', methods=['POST'])
+@login_required
+def marcar_todas_leidas():
+    """
+    Marca todas las notificaciones del usuario actual como leídas.
+    Si es admin, marca todas las notificaciones en la tabla.
+    """
+    if getattr(current_user, 'rol', None) == 'admin':
+        # Admin: marca todas las notificaciones
+        Notificacion.query.update({Notificacion.leida: True})
+    else:
+        # Usuario normal: marca solo sus notificaciones
+        Notificacion.query.filter_by(usuario_idusuario=current_user.idusuario).update({Notificacion.leida: True})
+    db.session.commit()
+    return jsonify({'ok': True})
+
+
+
 
 

@@ -270,10 +270,14 @@ def cambiar_estado_pedido(id_factura):
         return redirect(url_for("pago.listar_pedidos"))
 
     factura.estado_envio = nuevo_estado
-    # Crear notificación automática al usuario
+    # Crear notificación automática al usuario con mensaje específico si el pedido fue pagado
     try:
         from app.models.users import Notificacion
-        mensaje = f"El estado de su pedido #{factura.idventas_factura} ha cambiado a {nuevo_estado}."
+        if nuevo_estado == 'pagado':
+            # Cuando se marca como pagado, avisar que el pedido fue enviado al domicilio registrado
+            mensaje = f"Su pedido #{factura.idventas_factura} ha sido enviado al domicilio registrado en su perfil."
+        else:
+            mensaje = f"El estado de su pedido #{factura.idventas_factura} ha cambiado a {nuevo_estado}."
         noti = Notificacion(usuario_idusuario=factura.usuario_idusuario, tipo='pedido', mensaje=mensaje, leida=False, fecha_envio=datetime.now())
         db.session.add(noti)
     except Exception:

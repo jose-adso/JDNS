@@ -68,6 +68,14 @@
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                 <input type="password" name="password" id="password" class="form-control" required>
                             </div>
+                            <div id="password-requirements" class="mt-2">
+                                <small class="text-muted">Requisitos de contraseña:</small>
+                                <ul class="list-unstyled small">
+                                    <li id="req-length" class="text-danger">✓ Al menos 8 caracteres</li>
+                                    <li id="req-number" class="text-danger">✓ Al menos un número</li>
+                                    <li id="req-symbol" class="text-danger">✓ Al menos un símbolo</li>
+                                </ul>
+                            </div>
                         </div>
 
                         <input type="hidden" name="rolUser" value="Cliente">
@@ -84,5 +92,34 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const reqLength = document.getElementById('req-length');
+            const reqNumber = document.getElementById('req-number');
+            const reqSymbol = document.getElementById('req-symbol');
+
+            // Verificar longitud
+            if (password.length >= 8) {
+                reqLength.className = 'text-success';
+            } else {
+                reqLength.className = 'text-danger';
+            }
+
+            // Verificar número
+            if (/\d/.test(password)) {
+                reqNumber.className = 'text-success';
+            } else {
+                reqNumber.className = 'text-danger';
+            }
+
+            // Verificar símbolo
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                reqSymbol.className = 'text-success';
+            } else {
+                reqSymbol.className = 'text-danger';
+            }
+        });
+    </script>
 </body>
 </html>

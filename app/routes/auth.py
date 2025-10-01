@@ -10,8 +10,19 @@ import string
 import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import re
 
 from app import db
+
+def validate_password(password):
+    errors = []
+    if len(password) < 8:
+        errors.append("Al menos 8 caracteres")
+    if not re.search(r'[0-9]', password):
+        errors.append("Al menos un número")
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        errors.append("Al menos un símbolo")
+    return errors
 
 bp = Blueprint('auth', __name__)
 
@@ -65,6 +76,11 @@ def dashboard():
 @bp.route('/logout')
 @login_required
 def logout():
+    # Eliminar todas las notificaciones del usuario al cerrar sesión para evitar acumulación
+    from app.models.users import Notificacion
+    Notificacion.query.filter_by(usuario_idusuario=current_user.idusuario).delete()
+    db.session.commit()
+
     logout_user()
     flash('Has cerrado sesión.', 'info')
     return redirect(url_for('auth.login'))
@@ -77,6 +93,12 @@ def register_cliente():
         telefono = request.form['telefono']
         password = request.form['password']
         direccion = request.form['direccion']
+
+        # Validar contraseña
+        password_errors = validate_password(password)
+        if password_errors:
+            flash(f'Contraseña inválida: {", ".join(password_errors)}', 'danger')
+            return redirect(url_for('auth.register_cliente'))
 
         if Users.query.filter(func.lower(Users.nombre) == func.lower(nombre)).first():
             flash('El nombre de usuario ya existe. Por favor elige otro.', 'danger')
@@ -121,7 +143,12 @@ def register_admin():
             flash('Rol no permitido.', 'danger')
             return redirect(url_for('auth.register_admin'))
 
-        
+        # Validar contraseña
+        password_errors = validate_password(password)
+        if password_errors:
+            flash(f'Contraseña inválida: {", ".join(password_errors)}', 'danger')
+            return redirect(url_for('auth.register_admin'))
+
         if Users.query.filter(func.lower(Users.nombre) == func.lower(nombre)).first():
             flash('El nombre de usuario ya existe. Por favor elige otro.', 'danger')
             return redirect(url_for('auth.register_admin'))
@@ -170,46 +197,47 @@ def reset_password():
         session['reset_user_id'] = user.idusuario
         session['temp_password'] = temp_password
 
-        # Enviar email
+        # Enviar email con contraseña temporal
         try:
             smtp_server = "smtp.gmail.com"
             port = 587
             sender_email = "joserojas201890@gmail.com"
-            password = os.environ.get('GMAIL_APP_PASSWORD', 'ccnctaiecoeeuxae')
+            # IMPORTANTE: Configurar la variable de entorno GMAIL_APP_PASSWORD con un app password válido
+            password = os.environ.get('GMAIL_APP_PASSWORD', 'ccnctaiecoeeuxae')  # Cambiar por app password real
 
             print(f"Enviando email a: {correo}")
-            print(f"Usando servidor: {smtp_server}:{port}")
-            print(f"Remitente: {sender_email}")
+            print(f"Contraseña temporal: {temp_password}")
 
-            with smtplib.SMTP(smtp_server, 587) as server:
-                print("Conectando a servidor SMTP...")
-                server.starttls()
-                server.login(sender_email, password)
-                print("Login exitoso")
-                msg = MIMEMultipart()
-                msg['From'] = sender_email
-                msg['To'] = correo
-                msg['Subject'] = 'Contraseña Temporal - JDNS Comunicaciones'
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = correo
+            msg['Subject'] = 'Contraseña Temporal - JDNS Comunicaciones'
 
-                body = f"""Hola {user.nombre},
+            body = f"""Hola {user.nombre},
 
 Tu contraseña temporal es: {temp_password}
 
-Por favor, inicia sesión con esta contraseña y cámbiala inmediatamente por una nueva.
+Por favor, inicia sesión con esta contraseña y cámbiala inmediatamente por una nueva segura.
 
 Saludos,
 Equipo de JDNS Comunicaciones
 """
-                msg.attach(MIMEText(body, 'plain'))
+            msg.attach(MIMEText(body, 'plain'))
 
-                server.sendmail(sender_email, correo, msg.as_string())
-                print("Email enviado exitosamente")
+            server = smtplib.SMTP(smtp_server, port)
+            server.starttls()
+            server.login(sender_email, password)
+            text = msg.as_string()
+            server.sendmail(sender_email, correo, text)
+            server.quit()
 
-            flash('Contraseña temporal enviada a tu correo. Inicia sesión y cambia tu contraseña.', 'success')
+            print("Email enviado exitosamente")
+            flash('Contraseña temporal enviada a tu correo. Revisa tu bandeja de entrada y spam.', 'success')
             return redirect(url_for('auth.login'))
+
         except Exception as e:
             print(f"Error enviando email: {e}")
-            # Fallback: mostrar la contraseña en flash
+            # Fallback: mostrar en pantalla si email falla
             flash(f'Error enviando email. Tu contraseña temporal es: {temp_password}. Inicia sesión y cambia tu contraseña.', 'warning')
             return redirect(url_for('auth.login'))
 
@@ -226,8 +254,10 @@ def change_password():
             flash('Las nuevas contraseñas no coinciden.', 'danger')
             return redirect(url_for('auth.change_password'))
 
-        if len(new_password) < 6:
-            flash('La contraseña debe tener al menos 6 caracteres.', 'danger')
+        # Validar contraseña
+        password_errors = validate_password(new_password)
+        if password_errors:
+            flash(f'Contraseña inválida: {", ".join(password_errors)}', 'danger')
             return redirect(url_for('auth.change_password'))
 
         hashed_password = generate_password_hash(new_password)

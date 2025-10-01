@@ -49,7 +49,15 @@
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <div id="password-requirements" class="mt-2">
+                    <small class="text-muted">Requisitos de contraseña:</small>
+                    <ul class="list-unstyled small">
+                        <li id="req-length" class="text-danger">✓ Al menos 8 caracteres</li>
+                        <li id="req-number" class="text-danger">✓ Al menos un número</li>
+                        <li id="req-symbol" class="text-danger">✓ Al menos un símbolo</li>
+                    </ul>
+                </div>
               </div>
               <button type="submit" class="btn btn-primary w-100 mt-2">Registrar usuario</button>
             </form>
@@ -61,4 +69,36 @@
       </div>
     </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+   document.getElementById('password').addEventListener('input', function() {
+       const password = this.value;
+       const reqLength = document.getElementById('req-length');
+       const reqNumber = document.getElementById('req-number');
+       const reqSymbol = document.getElementById('req-symbol');
+
+       // Verificar longitud
+       if (password.length >= 8) {
+           reqLength.className = 'text-success';
+       } else {
+           reqLength.className = 'text-danger';
+       }
+
+       // Verificar número
+       if (/\d/.test(password)) {
+           reqNumber.className = 'text-success';
+       } else {
+           reqNumber.className = 'text-danger';
+       }
+
+       // Verificar símbolo
+       if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+           reqSymbol.className = 'text-success';
+       } else {
+           reqSymbol.className = 'text-danger';
+       }
+   });
+</script>
 {% endblock %}

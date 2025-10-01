@@ -4,6 +4,9 @@ from app.models.users import Carrito, Producto, Pago, VentaFactura, MetodoPagoMi
 from flask_login import current_user
 from datetime import datetime
 
+def format_currency(value):
+    return f"{value:,.0f}".replace(",", ".")
+
 carrito = Blueprint('carrito', __name__)
 
 @carrito.route('/carrito')
@@ -12,7 +15,8 @@ def ver_carrito():
         carritos = Carrito.query.filter_by(usuario_idusuario=current_user.idusuario).all()
         productos = {item.producto_idproducto: Producto.query.get(item.producto_idproducto) for item in carritos}
         total = sum(item.cantidad * productos[item.producto_idproducto].precio_unitario for item in carritos)
-        return render_template('plantilla.html', carritos=carritos, productos=productos, total=total, carrito_view=True)
+        total_formateado = f"$ {format_currency(total)}"
+        return render_template('plantilla.html', carritos=carritos, productos=productos, total=total, total_formateado=total_formateado, carrito_view=True)
     return redirect(url_for('auth.login'))
 
 @carrito.route('/carrito/agregar/<int:producto_id>', methods=['POST'])

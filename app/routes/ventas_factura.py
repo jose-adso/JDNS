@@ -3,6 +3,8 @@ from app import db
 from app.models.users import VentaFactura, Users
 from decimal import Decimal
 from datetime import datetime
+from flask_login import login_required, current_user
+from sqlalchemy import func
 
 bp = Blueprint('ventas_factura', __name__)
 
@@ -118,6 +120,70 @@ def venta_fisica():
     except Exception as e:
         db.session.rollback()
         return {"error": str(e)}, 500
+
+@bp.route('/estadisticas_ventas')
+@login_required
+def estadisticas_ventas():
+    if current_user.rol != 'admin':
+        return redirect(url_for('ventas_factura.listar_ventas'))
+
+    # Total ventas
+    total_ventas = db.session.query(func.sum(VentaFactura.total)).scalar() or 0
+    total_ventas = float(total_ventas)
+
+    # IVA (19%)
+    iva_total = total_ventas * 0.19
+
+    # Ganancias (10%)
+    ganancias = total_ventas * 0.10
+
+    # Formatear con puntos como separadores de miles
+    def format_currency(value):
+        return f"{value:,.0f}".replace(",", ".")
+
+    total_ventas_str = f"$ {format_currency(total_ventas)}"
+    iva_total_str = f"$ {format_currency(iva_total)}"
+    ganancias_str = f"$ {format_currency(ganancias)}"
+
+    # Ventas semanales (últimas 4 semanas)
+    semanal = db.session.query(
+        func.strftime('%Y-%W', VentaFactura.fecha_venta).label('semana'),
+        func.sum(VentaFactura.total).label('total')
+    ).filter(
+        VentaFactura.fecha_venta >= func.date('now', '-28 days')
+    ).group_by(
+        func.strftime('%Y-%W', VentaFactura.fecha_venta)
+    ).order_by(
+        func.strftime('%Y-%W', VentaFactura.fecha_venta)
+    ).all()
+
+    # Ventas mensuales (últimos 12 meses)
+    mensual = db.session.query(
+        func.strftime('%Y-%m', VentaFactura.fecha_venta).label('mes'),
+        func.sum(VentaFactura.total).label('total')
+    ).filter(
+        VentaFactura.fecha_venta >= func.date('now', '-12 months')
+    ).group_by(
+        func.strftime('%Y-%m', VentaFactura.fecha_venta)
+    ).order_by(
+        func.strftime('%Y-%m', VentaFactura.fecha_venta)
+    ).all()
+
+    # Preparar datos para Chart.js
+    semanas_labels = [f"Semana {s.semana.split('-')[1]}" for s in semanal]
+    semanas_data = [float(s.total) for s in semanal]
+
+    meses_labels = [f"{m.mes.split('-')[0]}-{m.mes.split('-')[1]}" for m in mensual]
+    meses_data = [float(m.total) for m in mensual]
+
+    return render_template('estadisticas_ventas.html',
+                          total_ventas_str=total_ventas_str,
+                          iva_total_str=iva_total_str,
+                          ganancias_str=ganancias_str,
+                          semanas_labels=semanas_labels,
+                          semanas_data=semanas_data,
+                          meses_labels=meses_labels,
+                          meses_data=meses_data)
 
 @bp.route('/ventas_factura/reparacion/<int:id_reparacion>', methods=['POST'])
 def facturar_reparacion(id_reparacion):

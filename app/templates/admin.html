@@ -65,6 +65,9 @@
                     <li class="list-group-item"><a href="{{ url_for('ventas_factura.listar_ventas') }}"
                             class="text-decoration-none">
                             <i class="bi bi-receipt me-2"></i>Facturas</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('ventas_factura.estadisticas_ventas') }}"
+                            class="text-decoration-none">
+                            <i class="bi bi-bar-chart me-2"></i>Estadísticas de Ventas</a></li>
                 </ul>
             </div>
 
@@ -192,11 +195,11 @@
             <div class="card shadow-custom text-center h-100">
                 <div class="card-body">
                     <div class="display-4 text-success mb-2">
-                        <i class="bi bi-box-seam"></i>
+                        <i class="bi bi-bar-chart"></i>
                     </div>
-                    <h5 class="card-title">Productos</h5>
-                    <p class="card-text text-muted">Lista de productos</p>
-                    <a href="{{ url_for('producto.listar_productos') }}" class="btn btn-success">Ver Productos</a>
+                    <h5 class="card-title">Estadísticas Ventas</h5>
+                    <p class="card-text text-muted">Gráficos semanales y mensuales</p>
+                    <a href="{{ url_for('ventas_factura.estadisticas_ventas') }}" class="btn btn-success">Ver Estadísticas</a>
                 </div>
             </div>
         </div>
@@ -208,7 +211,7 @@
                         <i class="bi bi-people"></i>
                     </div>
                     <h5 class="card-title">Usuarios</h5>
-                    <p class="card-text text-muted">Gestionar administradores</p>
+                    <p class="card-text text-muted">Gestionar usuarios</p>
                     <a href="{{ url_for('auth.register_admin') }}" class="btn btn-info text-white">Ver Usuarios</a>
                 </div>
             </div>

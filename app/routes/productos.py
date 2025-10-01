@@ -13,11 +13,17 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def format_currency(value):
+    return f"{value:,.0f}".replace(",", ".")
+
 @bp.route('/', endpoint='listar_productos')
 @login_required
 def listar_productos():
     productos = Producto.query.all()
     empresas = Empresa.query.all()
+    # Formatear precios
+    for p in productos:
+        p.precio_formateado = f"$ {format_currency(p.precio_unitario)}"
     if current_user.rol == 'admin':
         return render_template('productos.html', productos=productos, empresas=empresas)
     elif current_user.rol == 'cliente':

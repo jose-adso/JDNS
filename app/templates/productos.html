@@ -48,7 +48,7 @@
                             <td>{{ producto.nombre }}</td>
                             <td>{{ producto.descripcion|truncate(50) }}</td>
                             <td>{{ producto.tipo }}</td>
-                            <td class="text-end">${{ '{:.2f}'.format(producto.precio_unitario) }}</td>
+                            <td class="text-end">{{ producto.precio_formateado }}</td>
                             <td class="text-center">{{ producto.stock }}</td>
                             <td>
                                 {% for emp in empresas %}

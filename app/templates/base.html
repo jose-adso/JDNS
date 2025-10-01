@@ -152,21 +152,19 @@
             const notificationLink = document.querySelector('a[href*="notificaciones"]');
             if (notificationLink) {
                 notificationLink.addEventListener('click', async function() {
-                    // Marcar todas las notificaciones como leídas
                     try {
-                        const response = await fetch('/notificaciones/api');
-                        if (response.ok) {
-                            const data = await response.json();
-                            for (const noti of data) {
-                                if (!noti.leida) {
-                                    await fetch(`/notificaciones/leer/${noti.id}`, { method: 'POST' });
-                                }
+                        // Llamar al endpoint que marca todas las notificaciones como leídas
+                        await fetch('{{ url_for("notificaciones.marcar_todas_leidas") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
-                        }
+                        });
                     } catch (e) {
-                        console.warn('Error marking notifications as read', e);
+                        console.warn('Error marcando todas las notificaciones como leídas', e);
                     }
-                    // Ocultar badge
+                    // Ocultar badge inmediatamente en el cliente
                     const badge = document.getElementById('notification-badge');
                     if (badge) badge.style.display = 'none';
                 });
@@ -174,12 +172,11 @@
             const messageLink = document.querySelector('a[href*="mensaje_soporte"]');
             if (messageLink) {
                 messageLink.addEventListener('click', async function() {
-                    // Marcar todos los mensajes como leídos
+                    // Marcar todos los mensajes como leídos (si en el futuro existe endpoint, se puede llamar aquí)
                     try {
                         const response = await fetch('/mensaje_soporte/count_unread');
                         if (response.ok) {
-                            // Como no hay API para listar mensajes, marcar individualmente si es necesario
-                            // Por simplicidad, solo ocultar badge
+                            // Solo ocultamos el badge por simplicidad
                         }
                     } catch (e) {
                         console.warn('Error marking messages as read', e);
